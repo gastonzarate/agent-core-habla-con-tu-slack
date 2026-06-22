@@ -1,3 +1,5 @@
+import time
+
 import boto3
 
 
@@ -43,11 +45,19 @@ def ingest_documents(region, kb_id, ds_id, kb_docs):
     total = 0
     for i in range(0, len(kb_docs), 25):  # límite: 25 docs por llamada
         batch = kb_docs[i:i + 25]
-        ba.ingest_knowledge_base_documents(
-            knowledgeBaseId=kb_id,
-            dataSourceId=ds_id,
-            documents=batch,
-        )
+        for attempt in range(6):  # backoff ante el límite de 10 ingest concurrentes
+            try:
+                ba.ingest_knowledge_base_documents(
+                    knowledgeBaseId=kb_id,
+                    dataSourceId=ds_id,
+                    documents=batch,
+                )
+                break
+            except ba.exceptions.ValidationException as e:
+                if "concurrent" in str(e).lower() and attempt < 5:
+                    time.sleep(5)
+                    continue
+                raise
         total += len(batch)
     return total
 

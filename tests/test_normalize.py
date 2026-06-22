@@ -30,6 +30,7 @@ def test_skips_messages_with_subtype():
     msgs = [
         {"type": "message", "subtype": "channel_join", "user": "U1", "text": "se unió", "ts": "1.0"},
         {"type": "message", "subtype": "bot_message", "text": "bot dijo algo", "ts": "2.0"},
+        {"type": "message", "bot_id": "B123", "text": "respuesta del bot", "ts": "2.5"},
         {"type": "message", "user": "U2", "text": "mensaje real", "ts": "3.0"},
     ]
     out = normalize_messages(msgs, USER_MAP, channel="C9")

@@ -5,6 +5,8 @@ def normalize_messages(messages, user_map, channel):
             continue
         if m.get("subtype"):  # joins, edits, bot_message, etc. — no es contenido real
             continue
+        if m.get("bot_id"):  # mensajes de bots (incl. las propias respuestas) — evita ruido/loop
+            continue
         text = (m.get("text") or "").strip()
         if not text:
             continue
