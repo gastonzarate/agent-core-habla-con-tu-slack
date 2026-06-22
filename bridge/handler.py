@@ -60,6 +60,32 @@ def _ask_agent(prompt, session):
     return json.loads(resp["response"].read())["result"]
 
 
+def _slack_get(method, params):
+    url = "https://slack.com/api/" + method + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"Authorization": "Bearer " + BOT_TOKEN})
+    return json.loads(urllib.request.urlopen(req, timeout=15).read().decode())
+
+
+def _user_map():
+    members = _slack_get("users.list", {"limit": 500}).get("members", [])
+    return {u["id"]: (u.get("profile", {}).get("display_name") or u.get("name") or u["id"]) for u in members}
+
+
+def _scheduled_ingest():
+    """Batch idempotente: relee los últimos mensajes de cada canal del bot y los ingesta."""
+    channels = _slack_get("users.conversations",
+                          {"types": "public_channel,private_channel", "exclude_archived": "true", "limit": 200}).get("channels", [])
+    umap = _user_map()
+    total = 0
+    for ch in channels:
+        cid = ch["id"]
+        msgs = _slack_get("conversations.history", {"channel": cid, "limit": 200}).get("messages", [])
+        docs = normalize_messages(msgs, umap, channel=cid)
+        if docs and KB_ID and DATA_SOURCE_ID:
+            total += ingest_documents(REGION, KB_ID, DATA_SOURCE_ID, build_kb_documents(docs))
+    return total
+
+
 def _post_message(channel, text, thread_ts=None):
     payload = {"channel": channel, "text": text}
     if thread_ts:
@@ -106,6 +132,11 @@ def lambda_handler(event, context):
     if isinstance(event, dict) and event.get("__async__"):
         _process_async(event["action"])
         return {"statusCode": 200}
+
+    # EventBridge scheduler: ingesta batch cada 30 min
+    if isinstance(event, dict) and event.get("__scheduled_ingest__"):
+        n = _scheduled_ingest()
+        return {"statusCode": 200, "ingested": n}
 
     raw_body = event.get("body", "") or ""
     if event.get("isBase64Encoded"):
