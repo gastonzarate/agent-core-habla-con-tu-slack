@@ -3,6 +3,8 @@ def normalize_messages(messages, user_map, channel):
     for m in messages:
         if m.get("type") != "message":
             continue
+        if m.get("subtype"):  # joins, edits, bot_message, etc. — no es contenido real
+            continue
         text = (m.get("text") or "").strip()
         if not text:
             continue

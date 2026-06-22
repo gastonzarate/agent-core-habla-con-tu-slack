@@ -26,6 +26,17 @@ def test_skips_non_messages_and_empty_text():
     assert out[0]["text"] == "beto: hola"
 
 
+def test_skips_messages_with_subtype():
+    msgs = [
+        {"type": "message", "subtype": "channel_join", "user": "U1", "text": "se unió", "ts": "1.0"},
+        {"type": "message", "subtype": "bot_message", "text": "bot dijo algo", "ts": "2.0"},
+        {"type": "message", "user": "U2", "text": "mensaje real", "ts": "3.0"},
+    ]
+    out = normalize_messages(msgs, USER_MAP, channel="C9")
+    assert len(out) == 1
+    assert out[0]["text"] == "beto: mensaje real"
+
+
 def test_unknown_user_falls_back_to_id():
     msgs = [{"type": "message", "user": "U999", "text": "hey", "ts": "4.0"}]
     out = normalize_messages(msgs, USER_MAP, channel="C9")
