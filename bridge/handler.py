@@ -63,6 +63,9 @@ def lambda_handler(event, context):
         return {"statusCode": 200}
 
     raw_body = event.get("body", "") or ""
+    if event.get("isBase64Encoded"):
+        import base64
+        raw_body = base64.b64decode(raw_body).decode()
     headers = {k.lower(): v for k, v in (event.get("headers") or {}).items()}
     content_type = headers.get("content-type", "")
     action = classify_request(raw_body, content_type)
