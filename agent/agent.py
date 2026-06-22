@@ -4,9 +4,14 @@ from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from strands import Agent, tool
 from strands.models import BedrockModel
 
-from agent.normalize import normalize_messages
-from agent.kb import build_kb_documents, format_retrieval_results, ingest_documents, retrieve
-from agent.slack_reader import read_channel_history
+try:  # paquete (local: python -m agent.agent)
+    from agent.normalize import normalize_messages
+    from agent.kb import build_kb_documents, format_retrieval_results, ingest_documents, retrieve
+    from agent.slack_reader import read_channel_history
+except ModuleNotFoundError:  # plano (runtime: /var/task con módulos hermanos)
+    from normalize import normalize_messages
+    from kb import build_kb_documents, format_retrieval_results, ingest_documents, retrieve
+    from slack_reader import read_channel_history
 
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 KB_ID = os.environ["KB_ID"]
