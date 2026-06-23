@@ -321,6 +321,43 @@ agentcore deploy \
         </aside>
       </section>
 
+      <!-- 10 · HANDS-ON PASO 6: BRIDGE + SLACK -->
+      <section data-background-color="#0a0e17">
+        <span class="step-badge">Hands-on · Paso 6</span>
+        <h2>Conectar <strong>Slack</strong></h2>
+        <div class="handson">
+          <div class="explain">
+            <p>Slack no puede llamar al agente directo: manda un webhook y exige responder en <b>&lt; 3s</b>.</p>
+            <p>Una <em>Lambda‑puente</em> fina:</p>
+            <ul>
+              <li>valida la <b>firma</b> del request</li>
+              <li><b>ackea</b> al instante</li>
+              <li>invoca al agente <b>async</b></li>
+              <li>postea la respuesta <b>en el hilo</b></li>
+            </ul>
+          </div>
+          <div class="code">
+            <pre><code data-trim data-line-numbers="1-3|5-7|9-11" class="language-python">def lambda_handler(event, ctx):
+    if not firma_valida(event):        # viene de Slack?
+        return {"statusCode": 401}
+
+    # ack inmediato (&lt; 3s) + trabajo async
+    self_invoke_async(event)
+    return {"statusCode": 200, "body": "🔎 Buscando..."}
+
+# (async) → invoca AgentCore y postea en el hilo
+answer = invoke_agent_runtime(prompt)
+chat_postMessage(channel, answer, thread_ts)</code></pre>
+            <div class="run">python workshop/steps/step6_slack.py</div>
+          </div>
+        </div>
+        <aside class="notes">
+          El "porqué Lambda": el límite de 3s de Slack + validación de firma + invocación async.
+          El step empaqueta bridge/ (autocontenido) y crea Lambda + API Gateway. Devuelve la Request URL
+          → pegarla en la Slack App (Event Subscriptions + slash) y reinstalar. Mostrar la @mención real.
+        </aside>
+      </section>
+
     </div>
   </div>
 
