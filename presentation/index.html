@@ -244,6 +244,47 @@ s3v.create_index(
         </aside>
       </section>
 
+      <!-- 8 · HANDS-ON PASO 4: EL AGENTE -->
+      <section data-background-color="#0a0e17">
+        <span class="step-badge">Hands-on · Paso 4</span>
+        <h2>El <strong>agente</strong> que razona</h2>
+        <div class="handson">
+          <div class="explain">
+            <p>Antes hacíamos <code>retrieve</code> a mano. Ahora un <em>agente</em> (Strands):</p>
+            <ul>
+              <li>recibe la pregunta</li>
+              <li><b>decide</b> usar la tool <code>ask_kb</code></li>
+              <li>le pasa el contexto a <b>Claude</b></li>
+              <li>Claude redacta la respuesta + citas</li>
+            </ul>
+            <p>Dos tools: <code>ask_kb</code> y <code>ingest_slack</code>.<br>
+            Por ahora corre <b>local</b> — sin desplegar nada.</p>
+          </div>
+          <div class="code">
+            <pre><code data-trim data-line-numbers="1-5|7-11|13" class="language-python">@tool
+def ask_kb(question: str) -> str:
+    """Responde sobre el Slack indexado, con citas."""
+    ctx, cites = retrieve(kb_id, question)
+    return f"{ctx}\n\n[Fuentes: {cites}]"
+
+agent = Agent(
+    model=BedrockModel("claude-sonnet-4-6"),
+    tools=[ask_kb, ingest_slack],
+    system_prompt="Respondé sobre el Slack del equipo, "
+                  "siempre con las fuentes.",
+)
+
+agent("¿cuándo es el deploy de prod?")</code></pre>
+            <div class="run">python workshop/steps/step4_agent.py</div>
+          </div>
+        </div>
+        <aside class="notes">
+          Line-highlights: (1) la tool ask_kb es solo una función decorada; (2) el agente = modelo +
+          tools + prompt; (3) lo invocás como una función. Correr en vivo y mostrar el "Tool #1: ask_kb"
+          (el agente DECIDIENDO usar la herramienta) → ese es el momento "agente", no solo RAG.
+        </aside>
+      </section>
+
     </div>
   </div>
 
