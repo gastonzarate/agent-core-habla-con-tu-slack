@@ -3,6 +3,7 @@ import base64
 import json
 import os
 import re
+import time
 import urllib.parse
 import urllib.request
 
@@ -27,6 +28,7 @@ BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", "")
 BOT_USER_ID = os.environ.get("SLACK_BOT_USER_ID", "")
 KB_ID = os.environ.get("KB_ID", "")
 DATA_SOURCE_ID = os.environ.get("DATA_SOURCE_ID", "")
+INGEST_DAYS = int(os.environ.get("INGEST_DAYS", "7"))  # ventana de ingesta (últimos N días)
 
 
 def classify_request(raw_body, content_type):
@@ -71,16 +73,34 @@ def _user_map():
     return {u["id"]: (u.get("profile", {}).get("display_name") or u.get("name") or u["id"]) for u in members}
 
 
+def _channel_history(cid, oldest):
+    """Trae TODOS los mensajes del canal desde `oldest` (paginando)."""
+    msgs, cursor = [], None
+    while True:
+        params = {"channel": cid, "limit": 200, "oldest": oldest}
+        if cursor:
+            params["cursor"] = cursor
+        r = _slack_get("conversations.history", params)
+        msgs += r.get("messages", [])
+        cursor = r.get("response_metadata", {}).get("next_cursor")
+        if not cursor:
+            return msgs
+
+
 def _scheduled_ingest():
-    """Batch idempotente: relee los últimos mensajes de cada canal del bot y los ingesta."""
+    """Batch idempotente: ingesta los mensajes de los últimos INGEST_DAYS días de cada canal del bot.
+
+    La primera vez trae toda la ventana (ej. la última semana); como el id es
+    canal-ts, re-ingestar sobrescribe (no duplica).
+    """
+    oldest = str(int(time.time()) - INGEST_DAYS * 86400)
     channels = _slack_get("users.conversations",
                           {"types": "public_channel,private_channel", "exclude_archived": "true", "limit": 200}).get("channels", [])
     umap = _user_map()
     total = 0
     for ch in channels:
-        cid = ch["id"]
-        msgs = _slack_get("conversations.history", {"channel": cid, "limit": 200}).get("messages", [])
-        docs = normalize_messages(msgs, umap, channel=cid)
+        msgs = _channel_history(ch["id"], oldest)
+        docs = normalize_messages(msgs, umap, channel=ch["id"])
         if docs and KB_ID and DATA_SOURCE_ID:
             total += ingest_documents(REGION, KB_ID, DATA_SOURCE_ID, build_kb_documents(docs))
     return total

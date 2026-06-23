@@ -26,7 +26,7 @@ import zipfile
 import boto3
 from botocore.exceptions import ClientError
 
-from constants import REGION, FUNC, BRIDGE_ROLE, KB_NAME, AGENT_NAME, API_NAME
+from constants import REGION, FUNC, BRIDGE_ROLE, KB_NAME, AGENT_NAME, API_NAME, INGEST_DAYS
 
 HERE = Path(__file__).resolve().parent
 
@@ -68,6 +68,7 @@ with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
 code = buf.getvalue()
 
 env = {"AGENT_RUNTIME_ARN": runtime_arn, "KB_ID": kb_id, "DATA_SOURCE_ID": ds_id,
+       "INGEST_DAYS": str(INGEST_DAYS),
        "SLACK_SIGNING_SECRET": os.environ.get("SLACK_SIGNING_SECRET", ""),
        "SLACK_BOT_TOKEN": os.environ.get("SLACK_BOT_TOKEN", ""),
        "SLACK_BOT_USER_ID": os.environ.get("SLACK_BOT_USER_ID", "")}
