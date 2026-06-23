@@ -30,7 +30,7 @@ En la consola abrí **CloudShell** (ícono de terminal, arriba a la derecha).
 Ya trae tus credenciales: no hay que configurar nada.
 
 ```bash
-git clone <URL-del-repo> && cd poc_aws_slack/workshop
+git clone https://github.com/gastonzarate/agent-core-habla-con-tu-slack.git && cd agent-core-habla-con-tu-slack/workshop
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
@@ -40,7 +40,7 @@ pip install -r requirements.txt
 En tu máquina:
 
 ```bash
-git clone <URL-del-repo> && cd poc_aws_slack/workshop
+git clone https://github.com/gastonzarate/agent-core-habla-con-tu-slack.git && cd agent-core-habla-con-tu-slack/workshop
 python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 aws configure     # pegá Access Key / Secret de la cuenta de prueba
