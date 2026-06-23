@@ -46,16 +46,20 @@ runtime_arn = next(r["agentRuntimeArn"] for r in ac.list_agent_runtimes()["agent
 print(f"🔑 IAM role {BRIDGE_ROLE}")
 try:
     role_arn = iam.create_role(RoleName=BRIDGE_ROLE, AssumeRolePolicyDocument=json.dumps({
-        "Version": "2012-10-17", "Statement": [{"Effect": "Allow",
-            "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}))["Role"]["Arn"]
+        "Version": "2012-10-17",
+        "Statement": [{"Effect": "Allow", "Action": "sts:AssumeRole",
+                       "Principal": {"Service": "lambda.amazonaws.com"}}]}))["Role"]["Arn"]
 except iam.exceptions.EntityAlreadyExistsException:
     role_arn = iam.get_role(RoleName=BRIDGE_ROLE)["Role"]["Arn"]
 iam.put_role_policy(RoleName=BRIDGE_ROLE, PolicyName="perms", PolicyDocument=json.dumps({
     "Version": "2012-10-17", "Statement": [
-        {"Effect": "Allow", "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"], "Resource": "*"},
+        {"Effect": "Allow", "Resource": "*",
+         "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]},
         {"Effect": "Allow", "Action": "bedrock-agentcore:InvokeAgentRuntime", "Resource": "*"},
-        {"Effect": "Allow", "Action": ["bedrock:IngestKnowledgeBaseDocuments", "bedrock:StartIngestionJob"], "Resource": "*"},
-        {"Effect": "Allow", "Action": "lambda:InvokeFunction", "Resource": f"arn:aws:lambda:{REGION}:{acct}:function:{FUNC}"}]}))
+        {"Effect": "Allow", "Resource": "*",
+         "Action": ["bedrock:IngestKnowledgeBaseDocuments", "bedrock:StartIngestionJob"]},
+        {"Effect": "Allow", "Action": "lambda:InvokeFunction",
+         "Resource": f"arn:aws:lambda:{REGION}:{acct}:function:{FUNC}"}]}))
 
 # 2) empaquetar la carpeta (todo menos main.py)
 buf = io.BytesIO()

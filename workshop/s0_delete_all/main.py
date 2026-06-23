@@ -11,7 +11,6 @@ Ejecutar (desde workshop/):   python -m s0_delete_all.main
 
 import time
 
-
 import boto3
 from botocore.exceptions import ClientError
 from constants import AGENT_NAME, API_NAME, BUCKET, FUNC, INDEX, KB_NAME, REGION, ROLES, RULE

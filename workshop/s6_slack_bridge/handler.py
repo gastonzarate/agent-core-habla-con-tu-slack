@@ -94,8 +94,9 @@ def _scheduled_ingest():
     canal-ts, re-ingestar sobrescribe (no duplica).
     """
     oldest = str(int(time.time()) - INGEST_DAYS * 86400)
-    channels = _slack_get("users.conversations",
-                          {"types": "public_channel,private_channel", "exclude_archived": "true", "limit": 200}).get("channels", [])
+    resp = _slack_get("users.conversations",
+                      {"types": "public_channel,private_channel", "exclude_archived": "true", "limit": 200})
+    channels = resp.get("channels", [])
     umap = _user_map()
     total = 0
     for ch in channels:

@@ -78,6 +78,6 @@ ds_id = ba.create_data_source(
     dataDeletionPolicy="RETAIN",
 )["dataSource"]["dataSourceId"]
 
-print(f"\n✅ Knowledge Base creado:")
+print("\n✅ Knowledge Base creado:")
 print(f"   knowledgeBaseId: {kb_id}")
 print(f"   dataSourceId:    {ds_id}")

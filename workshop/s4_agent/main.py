@@ -29,8 +29,8 @@ os.environ["KB_ID"] = kb_id
 os.environ["DATA_SOURCE_ID"] = ds_id
 os.environ["MODEL_ID"] = MODEL_ID
 
-# importamos el agente DESPUÉS de setear el entorno
-from s4_agent.agent import _agent, _extract_text
+# importamos el agente DESPUÉS de setear el entorno (por eso el import va acá)
+from s4_agent.agent import _agent, _extract_text  # noqa: E402
 
 _agent.callback_handler = lambda **_: None  # silenciamos el stream automático
 
