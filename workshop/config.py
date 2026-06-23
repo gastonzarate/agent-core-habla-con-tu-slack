@@ -11,17 +11,41 @@ Variables de entorno (con defaults):
 import json
 import os
 import sys
+from dataclasses import dataclass
 from pathlib import Path
-
-# Permite importar los módulos ya probados del repo (infra/, agent/).
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from infra.config import load_config  # noqa: E402
 
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 PREFIX = os.environ.get("WORKSHOP_PREFIX", "slackrag")
 MODEL_ID = os.environ.get("MODEL_ID", "us.anthropic.claude-sonnet-4-6")
 
-CFG = load_config(region=REGION, prefix=PREFIX)  # .vector_bucket, .vector_index, .kb_name, .embedding_dim, .embedding_model_arn
+
+def embedding_model_arn(region: str) -> str:
+    return f"arn:aws:bedrock:{region}::foundation-model/amazon.titan-embed-text-v2:0"
+
+
+@dataclass(frozen=True)
+class Config:
+    region: str
+    prefix: str
+    vector_bucket: str
+    vector_index: str
+    kb_name: str
+    embedding_model_arn: str
+    embedding_dim: int = 1024
+
+
+def load_config(region: str = REGION, prefix: str = PREFIX) -> Config:
+    return Config(
+        region=region,
+        prefix=prefix,
+        vector_bucket=f"{prefix}-vectors",
+        vector_index=f"{prefix}-index",
+        kb_name=f"{prefix}-kb",
+        embedding_model_arn=embedding_model_arn(region),
+    )
+
+
+CFG = load_config()  # .vector_bucket, .vector_index, .kb_name, .embedding_dim, .embedding_model_arn
 
 _STATE = Path(__file__).resolve().parent / "state.local.json"
 

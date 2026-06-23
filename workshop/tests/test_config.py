@@ -1,4 +1,4 @@
-from infra.config import load_config, embedding_model_arn
+from config import load_config, embedding_model_arn
 
 
 def test_embedding_model_arn_uses_region():

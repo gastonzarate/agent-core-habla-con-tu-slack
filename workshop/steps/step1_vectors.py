@@ -8,8 +8,12 @@ de cada mensaje de Slack):
 
 Es 100% serverless y se paga por uso. Sin servidores que mantener.
 
-Ejecutar:  python workshop/step1_vectors.py
+Ejecutar:  python workshop/steps/step1_vectors.py
 """
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # permite importar config.py
+
 import boto3
 from botocore.exceptions import ClientError
 
@@ -56,7 +60,7 @@ def main():
     print("\n✅ Base vectorial lista:")
     print("   bucket:", bucket_arn)
     print("   índice:", index_arn)
-    print("\n👉 Siguiente: python workshop/step2_kb.py")
+    print("\n👉 Siguiente: python workshop/steps/step2_kb.py")
 
 
 if __name__ == "__main__":

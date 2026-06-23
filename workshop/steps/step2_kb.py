@@ -13,8 +13,12 @@ Acá creamos:
 
 Todo es find-or-create: si ya existe, lo reusa.
 
-Ejecutar:  python workshop/step2_kb.py
+Ejecutar:  python workshop/steps/step2_kb.py
 """
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # permite importar config.py
+
 import json
 import time
 
@@ -117,7 +121,7 @@ def main():
     print("\n✅ Knowledge Base listo:")
     print("   knowledgeBaseId:", kb_id)
     print("   dataSourceId:   ", ds_id)
-    print("\n👉 Siguiente: python workshop/step3_query.py")
+    print("\n👉 Siguiente: python workshop/steps/step3_query.py")
 
 
 if __name__ == "__main__":
