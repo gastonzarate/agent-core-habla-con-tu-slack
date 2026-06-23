@@ -135,6 +135,44 @@
         </aside>
       </section>
 
+      <!-- 5 · HANDS-ON PASO 2: KNOWLEDGE BASE -->
+      <section data-background-color="#0a0e17">
+        <span class="step-badge">Hands-on · Paso 2</span>
+        <h2>Crear el <strong>Knowledge Base</strong></h2>
+        <div class="handson">
+          <div class="explain">
+            <p>El KB es <em>RAG gestionado</em>. Le decís dónde guardar y con qué modelo, y él se encarga de:</p>
+            <ul>
+              <li><b>chunking</b> de los documentos</li>
+              <li><b>embeddings</b> con Titan v2</li>
+              <li><b>indexar</b> en S3 Vectors (paso 1)</li>
+            </ul>
+            <p>Una <b>data source CUSTOM</b> nos deja inyectar texto directo por API — sin bucket intermedio.</p>
+          </div>
+          <div class="code">
+            <pre><code data-trim data-line-numbers="1-6|7-9|10-12" class="language-python">ba.create_knowledge_base(
+    name="slackrag-kb",
+    roleArn=role_arn,
+    knowledgeBaseConfiguration={
+      "type": "VECTOR",
+      "vectorKnowledgeBaseConfiguration": {
+        "embeddingModelArn": titan_v2_arn,   # 1024 dims
+      }},
+    storageConfiguration={
+      "type": "S3_VECTORS",                  # 👈 serverless
+      "s3VectorsConfiguration": {
+        "vectorBucketArn": bucket, "indexArn": index}},
+)</code></pre>
+            <div class="run">python workshop/steps/step2_kb.py</div>
+          </div>
+        </div>
+        <aside class="notes">
+          Recorrer el código con los line-highlights: (1) nombre+role, (2) el modelo de embeddings,
+          (3) storage = S3_VECTORS, el punto serverless. Después correr el step EN VIVO: es idempotente,
+          si ya existe lo reusa. Mostrar el output con knowledgeBaseId.
+        </aside>
+      </section>
+
     </div>
   </div>
 

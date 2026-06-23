@@ -108,6 +108,30 @@ html, body { background: var(--bg); }
 .arch .legend i { font-style: normal; }
 .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 
+/* Slides de hands-on (explicación + código) */
+.step-badge {
+  display: inline-block; background: var(--accent); color: #06231e;
+  font-weight: 800; border-radius: 8px; padding: 3px 12px; font-size: 0.5em;
+  letter-spacing: 0.04em; margin-bottom: 0.3em;
+}
+.handson { display: flex; gap: 30px; align-items: flex-start; margin-top: 0.4em; }
+.handson .explain { flex: 0 0 38%; font-size: 0.62em; }
+.handson .explain ul { margin-left: 0.9em; }
+.handson .explain li { margin: 0.5em 0; color: var(--muted); }
+.handson .explain li b { color: var(--fg); font-weight: 700; }
+.handson .code { flex: 1; min-width: 0; }
+.reveal .handson pre {
+  width: 100%; box-shadow: 0 16px 50px rgba(0,0,0,0.5);
+  border: 1px solid var(--border); border-radius: 12px; margin: 0; font-size: 0.42em;
+}
+.reveal .handson pre code { padding: 18px 20px; border-radius: 12px; max-height: none; }
+.run {
+  margin-top: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.5em; color: var(--accent); background: rgba(56,224,198,0.08);
+  border: 1px solid rgba(56,224,198,0.25); border-radius: 8px; padding: 8px 12px;
+}
+.run::before { content: "$ "; opacity: 0.6; }
+
 .big { font-size: 1.5em; line-height: 1.2; }
 .dim { opacity: 0.45; }
 .reveal ul { margin-left: 1em; }
