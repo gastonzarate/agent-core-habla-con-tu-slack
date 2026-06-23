@@ -285,6 +285,42 @@ agent("¿cuándo es el deploy de prod?")</code></pre>
         </aside>
       </section>
 
+      <!-- 9 · HANDS-ON PASO 5: DEPLOY A AGENTCORE RUNTIME -->
+      <section data-background-color="#0a0e17">
+        <span class="step-badge">Hands-on · Paso 5</span>
+        <h2>Llevarlo a <strong>producción</strong></h2>
+        <div class="handson">
+          <div class="explain">
+            <p>El agente local pasa a <em>AgentCore Runtime</em>:</p>
+            <ul>
+              <li>hosting <b>serverless</b>, sesión aislada</li>
+              <li><b>observabilidad</b> incluida</li>
+              <li>sin contenedores ni servidores</li>
+            </ul>
+            <p>Con el CLI <code>agentcore</code>: <code>configure</code> arma la config, <code>deploy</code> publica.</p>
+            <p><b>direct_code_deploy</b> → no necesita Docker local.</p>
+          </div>
+          <div class="code">
+            <pre><code data-trim data-line-numbers="1-4|6-9" class="language-bash"># 1) configurar el runtime
+agentcore configure \
+    -e agent/agent.py \
+    -er $RUNTIME_ROLE
+
+# 2) desplegar con sus variables
+agentcore deploy \
+    --env KB_ID=$KB_ID \
+    --env MODEL_ID=claude-sonnet-4-6</code></pre>
+            <div class="run">python workshop/steps/step5_deploy.py --run</div>
+          </div>
+        </div>
+        <aside class="notes">
+          El salto: de "corre en mi máquina" a "serverless en AWS". Recalcar direct_code_deploy
+          (sin Docker) y que el deploy tarda 1-2 min empaquetando deps. Tras desplegar:
+          agentcore invoke '{"prompt":"..."}' para probar. Acá se puede mostrar la consola de
+          Observability con la traza del agente (momento wow).
+        </aside>
+      </section>
+
     </div>
   </div>
 
