@@ -1,3 +1,10 @@
+# Dependencias para correr los pasos del workshop localmente.
+# (un solo archivo para todo; instalá una vez en el setup)
 boto3==1.43.36
-pytest==9.1.1
+bedrock-agentcore==1.15.0
+strands-agents==1.44.0
 slack_sdk==3.42.0
+
+# Nota: el CLI de deploy (paso 5) se instala APARTE, con Python 3.13
+# (crashea en 3.14), por eso no va acá:
+#   uv tool install --python 3.13 bedrock-agentcore-starter-toolkit==0.3.9

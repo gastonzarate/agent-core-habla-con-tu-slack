@@ -26,7 +26,7 @@ s7_auto_ingest      ingesta automática cada 30 min
 cd workshop
 python3 -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install boto3
+pip install -r requirements.txt  # todas las dependencias de los pasos, en un solo lugar
 ```
 
 **Login a AWS (SSO):**
@@ -78,16 +78,19 @@ Ingesta unos mensajes y pregunta: el retrieval encuentra el correcto, con cita.
 
 ```bash
 cd ../s4_agent
-pip install -r requirements.txt        # strands, bedrock-agentcore, slack_sdk
 python main.py
 ```
 El agente decide usar la tool `ask_kb` y Claude redacta la respuesta.
 
 ## Paso 5 · Deploy a AgentCore Runtime
 
+El CLI de deploy se instala aparte (con Python 3.13 — crashea en 3.14):
+```bash
+uv tool install --python 3.13 bedrock-agentcore-starter-toolkit==0.3.9
+```
+Luego:
 ```bash
 cd ../s5_deploy_runtime
-pip install bedrock-agentcore-starter-toolkit
 python main.py            # muestra los comandos
 python main.py --run      # crea el role y despliega (1-2 min)
 ```

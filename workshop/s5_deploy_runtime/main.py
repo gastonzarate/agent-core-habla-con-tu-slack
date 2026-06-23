@@ -12,6 +12,7 @@ Requisitos: pasos 1-4. Tener instalado el CLI:  pip install bedrock-agentcore-st
 Ejecutar:   python main.py          (muestra los comandos)
             python main.py --run    (crea el role y ejecuta el deploy)
 """
+
 import sys
 from pathlib import Path
 
@@ -21,16 +22,19 @@ import json
 import subprocess
 
 import boto3
-
-from constants import REGION, MODEL_ID, RUNTIME_ROLE, KB_NAME, AGENT_NAME
+from constants import AGENT_NAME, KB_NAME, MODEL_ID, REGION, RUNTIME_ROLE
 
 # El CLI agentcore exige que el entrypoint esté DENTRO del cwd → corremos desde s4_agent/
 AGENT_DIR = str(Path(__file__).resolve().parent.parent / "s4_agent")
 
 acct = boto3.client("sts", region_name=REGION).get_caller_identity()["Account"]
 ba = boto3.client("bedrock-agent", region_name=REGION)
-kb_id = next(k["knowledgeBaseId"] for p in ba.get_paginator("list_knowledge_bases").paginate()
-             for k in p["knowledgeBaseSummaries"] if k["name"] == KB_NAME)
+kb_id = next(
+    k["knowledgeBaseId"]
+    for p in ba.get_paginator("list_knowledge_bases").paginate()
+    for k in p["knowledgeBaseSummaries"]
+    if k["name"] == KB_NAME
+)
 ds_id = ba.list_data_sources(knowledgeBaseId=kb_id)["dataSourceSummaries"][0]["dataSourceId"]
 role_arn = f"arn:aws:iam::{acct}:role/{RUNTIME_ROLE}"
 
@@ -38,25 +42,87 @@ role_arn = f"arn:aws:iam::{acct}:role/{RUNTIME_ROLE}"
 def ensure_runtime_role():
     iam = boto3.client("iam")
     try:
-        iam.create_role(RoleName=RUNTIME_ROLE, AssumeRolePolicyDocument=json.dumps({
-            "Version": "2012-10-17",
-            "Statement": [{"Effect": "Allow", "Principal": {"Service": "bedrock-agentcore.amazonaws.com"},
-                           "Action": "sts:AssumeRole", "Condition": {"StringEquals": {"aws:SourceAccount": acct}}}]}))
+        iam.create_role(
+            RoleName=RUNTIME_ROLE,
+            AssumeRolePolicyDocument=json.dumps(
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {"Service": "bedrock-agentcore.amazonaws.com"},
+                            "Action": "sts:AssumeRole",
+                            "Condition": {"StringEquals": {"aws:SourceAccount": acct}},
+                        }
+                    ],
+                }
+            ),
+        )
     except iam.exceptions.EntityAlreadyExistsException:
         pass
-    iam.put_role_policy(RoleName=RUNTIME_ROLE, PolicyName="perms", PolicyDocument=json.dumps({
-        "Version": "2012-10-17", "Statement": [
-            {"Effect": "Allow", "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream",
-                "bedrock:Retrieve", "bedrock:IngestKnowledgeBaseDocuments", "bedrock:StartIngestionJob"], "Resource": "*"},
-            {"Effect": "Allow", "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents",
-                "xray:PutTraceSegments", "xray:PutTelemetryRecords", "cloudwatch:PutMetricData",
-                "ecr:GetAuthorizationToken", "ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer"], "Resource": "*"}]}))
+    iam.put_role_policy(
+        RoleName=RUNTIME_ROLE,
+        PolicyName="perms",
+        PolicyDocument=json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Action": [
+                            "bedrock:InvokeModel",
+                            "bedrock:InvokeModelWithResponseStream",
+                            "bedrock:Retrieve",
+                            "bedrock:IngestKnowledgeBaseDocuments",
+                            "bedrock:StartIngestionJob",
+                        ],
+                        "Resource": "*",
+                    },
+                    {
+                        "Effect": "Allow",
+                        "Action": [
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents",
+                            "xray:PutTraceSegments",
+                            "xray:PutTelemetryRecords",
+                            "cloudwatch:PutMetricData",
+                            "ecr:GetAuthorizationToken",
+                            "ecr:BatchGetImage",
+                            "ecr:GetDownloadUrlForLayer",
+                        ],
+                        "Resource": "*",
+                    },
+                ],
+            }
+        ),
+    )
 
 
-configure = ["agentcore", "configure", "-e", "agent.py", "-n", AGENT_NAME, "-rf", "requirements.txt",
-             "-er", role_arn, "--disable-memory"]
-deploy = ["agentcore", "deploy", "--env", f"KB_ID={kb_id}", "--env", f"DATA_SOURCE_ID={ds_id}",
-          "--env", f"MODEL_ID={MODEL_ID}", "-auc"]
+configure = [
+    "agentcore",
+    "configure",
+    "-e",
+    "agent.py",
+    "-n",
+    AGENT_NAME,
+    "-rf",
+    "requirements.txt",
+    "-er",
+    role_arn,
+    "--disable-memory",
+]
+deploy = [
+    "agentcore",
+    "deploy",
+    "--env",
+    f"KB_ID={kb_id}",
+    "--env",
+    f"DATA_SOURCE_ID={ds_id}",
+    "--env",
+    f"MODEL_ID={MODEL_ID}",
+    "-auc",
+]
 
 print("🚀 Deploy a AgentCore Runtime (direct_code_deploy, sin Docker)\n")
 print("1) configurar:\n   " + " ".join(configure) + "\n")
