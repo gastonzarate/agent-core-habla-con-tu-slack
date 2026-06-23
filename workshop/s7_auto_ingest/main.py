@@ -42,9 +42,10 @@ events.put_targets(Rule=RULE, Targets=[{
     "Id": "1", "Arn": func_arn, "Input": json.dumps({"__scheduled_ingest__": True})}])
 print("🔗 Regla conectada a la Lambda.")
 
-# 4) disparamos una ingesta de prueba ahora
-print("\n▶️  Disparando una ingesta de prueba...")
-resp = lam.invoke(FunctionName=FUNC, Payload=json.dumps({"__scheduled_ingest__": True}).encode())
-out = json.loads(resp["Payload"].read())
-print(f"   resultado: {out}")
+# 4) disparamos una ingesta de prueba ahora (async, como lo hace EventBridge:
+#    no esperamos a que termine — ingestar todos los canales puede tardar)
+print("\n▶️  Disparando una ingesta de prueba (async)...")
+lam.invoke(FunctionName=FUNC, InvocationType="Event",
+           Payload=json.dumps({"__scheduled_ingest__": True}).encode())
+print("   disparada ✅ (corre en segundo plano)")
 print("\n✅ Ingesta automática activada: corre sola cada 30 minutos.")

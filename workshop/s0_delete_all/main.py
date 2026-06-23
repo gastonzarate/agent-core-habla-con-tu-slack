@@ -9,6 +9,7 @@ Knowledge Base, índice y bucket de S3 Vectors, y los 3 IAM roles.
 Ejecutar:  python main.py
 """
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
@@ -61,6 +62,15 @@ step("AgentCore Runtime", lambda: ac.delete_agent_runtime(
 step("Knowledge Base", lambda: ba.delete_knowledge_base(
     knowledgeBaseId=next(k["knowledgeBaseId"] for p in ba.get_paginator("list_knowledge_bases").paginate()
                          for k in p["knowledgeBaseSummaries"] if k["name"] == KB_NAME)))
+
+# Esperar a que el KB termine de borrarse ANTES de tocar S3 Vectors
+# (si le sacamos el storage por debajo, la eliminación se traba).
+for _ in range(60):
+    if KB_NAME not in [k["name"] for p in ba.get_paginator("list_knowledge_bases").paginate()
+                       for k in p["knowledgeBaseSummaries"]]:
+        break
+    print("   ⏳ esperando que el Knowledge Base termine de borrarse...")
+    time.sleep(5)
 
 # 6) S3 Vectors (índice antes que bucket)
 step("Índice S3 Vectors", lambda: s3v.delete_index(vectorBucketName=BUCKET, indexName=INDEX))

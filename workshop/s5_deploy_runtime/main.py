@@ -24,8 +24,8 @@ import boto3
 
 from constants import REGION, MODEL_ID, RUNTIME_ROLE, KB_NAME, AGENT_NAME
 
-AGENT_PY = str(Path(__file__).resolve().parent.parent / "s4_agent" / "agent.py")
-REQS = str(Path(__file__).resolve().parent.parent / "s4_agent" / "requirements.txt")
+# El CLI agentcore exige que el entrypoint esté DENTRO del cwd → corremos desde s4_agent/
+AGENT_DIR = str(Path(__file__).resolve().parent.parent / "s4_agent")
 
 acct = boto3.client("sts", region_name=REGION).get_caller_identity()["Account"]
 ba = boto3.client("bedrock-agent", region_name=REGION)
@@ -53,7 +53,7 @@ def ensure_runtime_role():
                 "ecr:GetAuthorizationToken", "ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer"], "Resource": "*"}]}))
 
 
-configure = ["agentcore", "configure", "-e", AGENT_PY, "-n", AGENT_NAME, "-rf", REQS,
+configure = ["agentcore", "configure", "-e", "agent.py", "-n", AGENT_NAME, "-rf", "requirements.txt",
              "-er", role_arn, "--disable-memory"]
 deploy = ["agentcore", "deploy", "--env", f"KB_ID={kb_id}", "--env", f"DATA_SOURCE_ID={ds_id}",
           "--env", f"MODEL_ID={MODEL_ID}", "-auc"]
@@ -69,7 +69,8 @@ if "--run" not in sys.argv:
 print(f"🔑 Asegurando IAM role {RUNTIME_ROLE}...")
 ensure_runtime_role()
 print("▶️  configure...")
-subprocess.run(configure, check=True)
+# corremos desde s4_agent/ (el CLI exige entrypoint dentro del cwd); newlines = aceptar defaults
+subprocess.run(configure, cwd=AGENT_DIR, input=b"\n" * 20, check=True)
 print("▶️  deploy... (1-2 min)")
-subprocess.run(deploy, check=True)
+subprocess.run(deploy, cwd=AGENT_DIR, check=True)
 print('\n✅ Agente desplegado. Probá:  agentcore invoke \'{"prompt": "hola"}\'')

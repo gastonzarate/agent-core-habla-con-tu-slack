@@ -20,9 +20,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar
 import io
 import json
 import os
+import time
 import zipfile
 
 import boto3
+from botocore.exceptions import ClientError
 
 from constants import REGION, FUNC, BRIDGE_ROLE, KB_NAME, AGENT_NAME, API_NAME
 
@@ -70,10 +72,19 @@ env = {"AGENT_RUNTIME_ARN": runtime_arn, "KB_ID": kb_id, "DATA_SOURCE_ID": ds_id
        "SLACK_BOT_TOKEN": os.environ.get("SLACK_BOT_TOKEN", ""),
        "SLACK_BOT_USER_ID": os.environ.get("SLACK_BOT_USER_ID", "")}
 
-# 3) función Lambda
+# 3) función Lambda (con reintento mientras el role recién creado propaga)
 print(f"λ  Función {FUNC}")
-lam.create_function(FunctionName=FUNC, Runtime="python3.12", Handler="handler.lambda_handler",
-                    Role=role_arn, Timeout=120, Code={"ZipFile": code}, Environment={"Variables": env})
+for intento in range(6):
+    try:
+        lam.create_function(FunctionName=FUNC, Runtime="python3.12", Handler="handler.lambda_handler",
+                            Role=role_arn, Timeout=120, Code={"ZipFile": code}, Environment={"Variables": env})
+        break
+    except ClientError as e:
+        if "cannot be assumed" in str(e) and intento < 5:
+            print("   esperando que el IAM role propague...")
+            time.sleep(8)
+        else:
+            raise
 
 # 4) API HTTP que la expone
 print("🌐 API Gateway")

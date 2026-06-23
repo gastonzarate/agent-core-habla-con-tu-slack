@@ -28,17 +28,20 @@ bucket_arn = f"arn:aws:s3vectors:{REGION}:{acct}:bucket/{BUCKET}"
 index_arn = f"{bucket_arn}/index/{INDEX}"
 titan = titan_arn(REGION)
 
-# 1) IAM role que asume el Knowledge Base
+# 1) IAM role que asume el Knowledge Base (crear-o-reusar)
 iam = boto3.client("iam")
-print(f"🔑 Creando IAM role: {KB_ROLE}")
-role_arn = iam.create_role(
-    RoleName=KB_ROLE,
-    AssumeRolePolicyDocument=json.dumps({
-        "Version": "2012-10-17",
-        "Statement": [{"Effect": "Allow", "Principal": {"Service": "bedrock.amazonaws.com"},
-                       "Action": "sts:AssumeRole", "Condition": {"StringEquals": {"aws:SourceAccount": acct}}}],
-    }),
-)["Role"]["Arn"]
+print(f"🔑 IAM role: {KB_ROLE}")
+try:
+    role_arn = iam.create_role(
+        RoleName=KB_ROLE,
+        AssumeRolePolicyDocument=json.dumps({
+            "Version": "2012-10-17",
+            "Statement": [{"Effect": "Allow", "Principal": {"Service": "bedrock.amazonaws.com"},
+                           "Action": "sts:AssumeRole", "Condition": {"StringEquals": {"aws:SourceAccount": acct}}}],
+        }),
+    )["Role"]["Arn"]
+except iam.exceptions.EntityAlreadyExistsException:
+    role_arn = iam.get_role(RoleName=KB_ROLE)["Role"]["Arn"]
 iam.put_role_policy(RoleName=KB_ROLE, PolicyName="perms", PolicyDocument=json.dumps({
     "Version": "2012-10-17",
     "Statement": [
@@ -70,9 +73,12 @@ for intento in range(6):
         time.sleep(8)
 
 # 3) Data source CUSTOM (ingestión directa, sin bucket intermedio)
+#    dataDeletionPolicy=RETAIN → al borrar el KB no intenta limpiar el vector
+#    store (lo borramos aparte en el paso 0), así el borrado es siempre limpio.
 ds_id = ba.create_data_source(
     knowledgeBaseId=kb_id, name=DATA_SOURCE_NAME,
     dataSourceConfiguration={"type": "CUSTOM"},
+    dataDeletionPolicy="RETAIN",
 )["dataSource"]["dataSourceId"]
 
 print(f"\n✅ Knowledge Base creado:")
