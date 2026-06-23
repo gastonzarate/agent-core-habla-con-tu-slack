@@ -103,7 +103,7 @@ export SLACK_BOT_USER_ID=U...          # auth.test, o el user id del bot
 python main.py
 ```
 Imprime la **Request URL**. Pegala en la Slack App (Event Subscriptions +
-Slash Commands) y reinstalá la app. (Ver `slack/manifest.yaml` para los scopes.)
+Slash Commands) y reinstalá la app. (Ver `utils/manifest.yaml` para los scopes.)
 
 ## Paso 7 · Ingesta automática
 

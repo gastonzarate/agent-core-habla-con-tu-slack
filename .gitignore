@@ -5,6 +5,5 @@ __pycache__/
 *.zip
 .bedrock_agentcore.yaml
 .bedrock_agentcore/
-workshop/state.local.json
 .pytest_cache/
 .venv-tools/
