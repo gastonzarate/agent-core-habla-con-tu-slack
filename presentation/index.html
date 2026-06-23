@@ -390,6 +390,94 @@ events.put_targets(Rule="slackrag-ingest-30min",
         </aside>
       </section>
 
+      <!-- 12 · OBSERVABILITY -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Producción · Observability</span>
+        <h2>¿Cómo sabés que <strong>anda bien</strong>?</h2>
+        <div class="two-col">
+          <div>
+            <p class="muted" style="font-size:0.62em;">AgentCore emite telemetría <em>OpenTelemetry</em> a CloudWatch. Métricas reales del runtime, por minuto:</p>
+            <table class="data">
+              <tr><th>Métrica</th><th>Qué mide</th></tr>
+              <tr><td>Invocations</td><td>requests al agente</td></tr>
+              <tr><td>Session Count</td><td>sesiones nuevas</td></tr>
+              <tr><td>Latency</td><td>tiempo end‑to‑end</td></tr>
+              <tr><td>Token usage</td><td>tokens in / out</td></tr>
+              <tr><td>Total Errors</td><td>% sobre invocaciones</td></tr>
+              <tr><td>Throttles</td><td>rate limiting (429)</td></tr>
+              <tr><td>CPU / Memory</td><td>vCPU‑h · GB‑h (= costo)</td></tr>
+            </table>
+          </div>
+          <div>
+            <p class="muted" style="font-size:0.62em;">Además, <b>traces y spans</b> de cada paso:</p>
+            <ul class="pill-list">
+              <li>🔍 <b>Traza</b> del razonamiento: qué tool llamó y por qué</li>
+              <li>⏱️ <b>latency_ms</b> por span (dónde se va el tiempo)</li>
+              <li>📦 request / response payload de cada invocación</li>
+              <li>❌ <b>error_type</b>: user · system · throttle</li>
+            </ul>
+            <div class="note-box">Dashboard de <b>CloudWatch GenAI Observability</b> → trazas, errores y tokens, sin instrumentar nada.</div>
+          </div>
+        </div>
+        <aside class="notes">
+          Mostrar EN VIVO el dashboard de CloudWatch gen-AI observability con la traza de una invocación
+          real. El punto: "no es una caja negra" — ves cada decisión del agente, la latencia y los tokens.
+          Métricas batcheadas a 1 min; resource usage puede demorar hasta 60 min.
+        </aside>
+      </section>
+
+      <!-- 13 · COSTOS + MANTLE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">El argumento · Costos</span>
+        <h2>Consumo puro · <strong>~$0 en reposo</strong></h2>
+        <div class="two-col">
+          <div>
+            <p class="muted" style="font-size:0.6em;">Precios reales AgentCore (consumo, sin mínimos):</p>
+            <table class="data">
+              <tr><th>Componente</th><th>Precio</th></tr>
+              <tr><td>Runtime · CPU</td><td class="num">$0.0895 / vCPU‑h</td></tr>
+              <tr><td>Runtime · memoria</td><td class="num">$0.00945 / GB‑h</td></tr>
+              <tr><td>Gateway · llamadas</td><td class="num">$0.005 / 1.000</td></tr>
+              <tr><td>Memory · largo plazo</td><td class="num">$0.75 / 1.000·mes</td></tr>
+              <tr><td>Identity (con Runtime)</td><td class="num">gratis</td></tr>
+              <tr class="total"><td>En reposo</td><td class="num">≈ $0</td></tr>
+            </table>
+            <div class="note-box">CPU no se cobra en <em>I/O wait</em>. Facturación por <b>segundo</b>. (+ tokens de Bedrock aparte.)</div>
+          </div>
+          <div>
+            <p class="muted" style="font-size:0.6em;">¿Y si querés <em>cobrarlo</em> o ver el uso por cliente?</p>
+            <ul class="pill-list">
+              <li>📊 <b>Mantle</b> — la capa de negocio para apps de IA</li>
+              <li>metering de uso por <b>cliente / equipo</b></li>
+              <li>billing usage‑based + planes</li>
+              <li>se integra vía <b>MCP</b> y webhooks</li>
+            </ul>
+            <div class="note-box"><b>Mantle</b> mide y monetiza el consumo del agente: ideal si esto se vuelve un producto interno con chargeback o un SaaS.</div>
+          </div>
+        </div>
+        <aside class="notes">
+          El mensaje comercial: pagás solo cuando se usa, en reposo no pagás infra. Diferencia con
+          OpenSearch (piso de cientos de USD/mes). Mantle entra para el caso "lo quiero cobrar / medir
+          por cliente": metering + billing usage-based, integrable por MCP. Honestidad: los tokens del
+          modelo (Claude/Titan) se facturan aparte en Bedrock.
+        </aside>
+      </section>
+
+      <!-- 14 · CIERRE COMERCIAL -->
+      <section class="center" data-background-color="#0a0e17">
+        <span class="kicker">Craftech</span>
+        <h1>Esto lo armaste <strong>hoy</strong>.<br>Imaginá con tu data real.</h1>
+        <p class="sub center" style="margin:0.6em auto;">
+          Slack, Teams, Confluence, tickets… <em>casi sin infra</em>, 100% AWS.
+        </p>
+        <p class="big" style="margin-top:0.6em;">Craftech te lo <strong>implementa y opera</strong>.</p>
+        <div class="badge">¿Preguntas? Hablemos →</div>
+        <aside class="notes">
+          Cierre: recapitular los 3 pasos (entra → se organiza → preguntás). El mismo patrón sirve para
+          cualquier fuente. Llamado a la acción: Craftech lo implementa. Abrir Q&A.
+        </aside>
+      </section>
+
     </div>
   </div>
 

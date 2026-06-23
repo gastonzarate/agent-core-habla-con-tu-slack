@@ -132,6 +132,26 @@ html, body { background: var(--bg); }
 }
 .run::before { content: "$ "; opacity: 0.6; }
 
+/* Tablas de métricas y costos */
+.reveal table.data { font-size: 0.52em; border-collapse: collapse; width: 100%; margin-top: 0.4em; }
+.reveal table.data th { color: var(--accent); text-align: left; border-bottom: 1px solid var(--border);
+  padding: 8px 10px; font-weight: 700; }
+.reveal table.data td { color: var(--fg); border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 7px 10px; }
+.reveal table.data td.num { color: var(--accent2); font-family: ui-monospace, monospace; white-space: nowrap; }
+.reveal table.data tr.total td { border-top: 2px solid var(--accent); font-weight: 800; }
+.reveal table.data tr.total td.num { color: var(--accent); }
+
+.two-col { display: flex; gap: 30px; align-items: flex-start; margin-top: 0.4em; }
+.two-col > div { flex: 1; }
+.pill-list { list-style: none; margin-left: 0; }
+.pill-list li { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 14px; margin: 8px 0; font-size: 0.62em; }
+.pill-list li b { color: var(--accent); }
+.note-box { background: rgba(124,156,245,0.08); border: 1px solid rgba(124,156,245,0.3);
+  border-radius: 10px; padding: 12px 16px; font-size: 0.6em; color: var(--muted); margin-top: 12px; }
+.note-box b { color: var(--accent2); }
+
 .big { font-size: 1.5em; line-height: 1.2; }
 .dim { opacity: 0.45; }
 .reveal ul { margin-left: 1em; }
