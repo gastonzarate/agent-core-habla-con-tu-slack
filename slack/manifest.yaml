@@ -9,20 +9,23 @@ features:
     - command: /ask
       description: Preguntale a tu Slack
       usage_hint: "¿qué se decidió sobre el deploy?"
-      # Request URL: se completa tras desplegar el API Gateway (Task 11)
-    - command: /ingest
-      description: Indexar la historia del canal actual
-      usage_hint: ""
+      # Request URL: completar con el endpoint del API Gateway (paso 6)
 oauth_config:
   scopes:
     bot:
-      - commands
-      - channels:history
-      - channels:read
-      - groups:history
-      - users:read
-      - chat:write
+      - app_mentions:read   # recibir @menciones
+      - chat:write          # responder en el hilo
+      - channels:history    # leer mensajes (canales públicos)
+      - groups:history      # leer mensajes (canales privados)
+      - channels:read       # listar canales públicos del bot
+      - groups:read         # listar canales privados del bot
+      - users:read          # resolver IDs de usuario -> nombres
+      - commands            # (opcional) slash command /ask
 settings:
+  event_subscriptions:
+    # request_url: https://<API_GATEWAY>.execute-api.<region>.amazonaws.com  # completar (paso 6)
+    bot_events:
+      - app_mention
   org_deploy_enabled: false
   socket_mode_enabled: false
   token_rotation_enabled: false
