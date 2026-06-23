@@ -1,62 +1,130 @@
 # Workshop — Hablá con tu Slack
 
-Agente de IA serverless en AWS que ingesta mensajes de Slack a un Knowledge Base
-(S3 Vectors) y responde preguntas en lenguaje natural con citas.
+Construí, paso a paso, un agente de IA serverless en AWS que ingesta mensajes
+de Slack a un Knowledge Base (S3 Vectors) y responde preguntas con citas.
 
-## Estructura
+Cada paso es una **carpeta autocontenida** con su `main.py` y su `requirements.txt`.
+Se corren **en orden**, de a uno. Empezás limpiando (`s0`) y construís de `s1` a `s7`.
 
 ```
-workshop/
-├── config.py          # config + estado compartido entre pasos (state.local.json)
-├── steps/             # los pasos del hands-on (se corren en orden)
-│   ├── step1_vectors.py   # base vectorial (S3 Vectors)
-│   └── step2_kb.py        # Knowledge Base + data source
-├── agent/             # AUTOCONTENIDO → se despliega a AgentCore Runtime
-│   ├── agent.py           # agente Strands (tools: ask_kb, ingest_slack)
-│   ├── normalize.py kb.py slack_reader.py
-│   └── requirements.txt
-├── bridge/            # AUTOCONTENIDO → se despliega como Lambda
-│   ├── handler.py         # recibe Slack, valida firma, invoca el agente
-│   ├── slack_sig.py blocks.py normalize.py kb.py
-│   └── requirements.txt
-└── tests/             # tests de la lógica pura (pytest)
+s0_delete_all       borra todo (empezar/terminar limpio)
+s1_vector_bucket    base vectorial (S3 Vectors)
+s2_knowledge_base   Knowledge Base + data source
+s3_ingest_and_query ingestar y preguntar (RAG, el "aha")
+s4_agent            el agente Strands (local)
+s5_deploy_runtime   deploy a AgentCore Runtime
+s6_slack_bridge     Lambda-puente + API Gateway (Slack)
+s7_auto_ingest      ingesta automática cada 30 min
 ```
 
-> `agent/` y `bridge/` duplican `normalize.py` y `kb.py` a propósito: así cada
-> uno se empaqueta zippeando su carpeta, sin dependencias externas.
+---
 
-## Requisitos
+## 0 · Setup (una sola vez)
 
-- Credenciales AWS activas (perfil con acceso al sandbox).
-- Acceso en Bedrock a **Titan Text Embeddings v2** y **Claude**.
-- Python 3.12+ y las dependencias de dev:
+**Python + entorno virtual:**
+```bash
+cd workshop
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install boto3
+```
+
+**Login a AWS (SSO):**
+```bash
+aws sso login --profile sandbox
+export AWS_PROFILE=sandbox
+aws sts get-caller-identity       # confirma que estás logueado
+```
+
+**Acceso a modelos en Bedrock** (consola → Bedrock → Model access): habilitá
+**Titan Text Embeddings v2** y **Claude Sonnet 4.6** en `us-east-1`.
+
+---
+
+## Paso 0 · Borrar todo (empezar limpio)
 
 ```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r workshop/requirements-dev.txt
+cd s0_delete_all
+python main.py
 ```
 
-## Variables de entorno (opcionales)
+---
 
-| Variable | Default | Para qué |
-|----------|---------|----------|
-| `AWS_REGION` | `us-east-1` | región de los recursos |
-| `WORKSHOP_PREFIX` | `slackrag` | prefijo de nombres (cambialo para no chocar con otros) |
-| `MODEL_ID` | `us.anthropic.claude-sonnet-4-6` | modelo de Claude |
-
-## Pasos
+## Paso 1 · Base vectorial (S3 Vectors)
 
 ```bash
-python workshop/steps/step1_vectors.py   # 1 · base vectorial
-python workshop/steps/step2_kb.py        # 2 · Knowledge Base
-# (3-7 se agregan a medida que avanza el workshop)
+cd ../s1_vector_bucket
+python main.py
 ```
+Crea el vector bucket y el índice (dim 1024, cosine).
 
-Cada paso es **idempotente** (si el recurso existe, lo reusa) y guarda lo que
-necesita el siguiente en `workshop/state.local.json`.
-
-## Tests
+## Paso 2 · Knowledge Base
 
 ```bash
-cd workshop && python -m pytest -q
+cd ../s2_knowledge_base
+python main.py
 ```
+Crea el IAM role, el Knowledge Base sobre S3 Vectors y una data source CUSTOM.
+
+## Paso 3 · Ingestar y preguntar (el "aha")
+
+```bash
+cd ../s3_ingest_and_query
+python main.py
+```
+Ingesta unos mensajes y pregunta: el retrieval encuentra el correcto, con cita.
+
+## Paso 4 · El agente (local)
+
+```bash
+cd ../s4_agent
+pip install -r requirements.txt        # strands, bedrock-agentcore, slack_sdk
+python main.py
+```
+El agente decide usar la tool `ask_kb` y Claude redacta la respuesta.
+
+## Paso 5 · Deploy a AgentCore Runtime
+
+```bash
+cd ../s5_deploy_runtime
+pip install bedrock-agentcore-starter-toolkit
+python main.py            # muestra los comandos
+python main.py --run      # crea el role y despliega (1-2 min)
+```
+
+## Paso 6 · Conectar Slack
+
+Necesitás los secretos de tu Slack App (Signing Secret y Bot Token):
+```bash
+cd ../s6_slack_bridge
+export SLACK_SIGNING_SECRET=...        # Basic Information → App Credentials
+export SLACK_BOT_TOKEN=xoxb-...        # OAuth & Permissions (tras instalar)
+export SLACK_BOT_USER_ID=U...          # auth.test, o el user id del bot
+python main.py
+```
+Imprime la **Request URL**. Pegala en la Slack App (Event Subscriptions +
+Slash Commands) y reinstalá la app. (Ver `slack/manifest.yaml` para los scopes.)
+
+## Paso 7 · Ingesta automática
+
+```bash
+cd ../s7_auto_ingest
+python main.py
+```
+Crea la regla de EventBridge (cada 30 min) y dispara una ingesta de prueba.
+
+---
+
+## Probarlo en Slack
+
+En un canal donde esté el bot:
+```
+@slack-rag ¿de qué se viene hablando en este canal?
+```
+
+## Empezar de nuevo
+
+```bash
+cd s0_delete_all && python main.py
+```
+Borra todo para volver a arrancar (útil porque el sandbox se resetea a diario).

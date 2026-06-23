@@ -1,9 +1,9 @@
 display_information:
   name: Hablá con tu Slack
-  description: Preguntale a tu Slack — agente de IA serverless en AWS (AgentCore)
+  description: Preguntale a tu Slack — agente de IA serverless en AWS
 features:
   bot_user:
-    display_name: slack-rag
+    display_name: slackbot
     always_online: true
   slash_commands:
     - command: /ask
