@@ -9,12 +9,9 @@ de cada mensaje de Slack):
 Es 100% serverless: se paga por uso, sin servidores que mantener.
 
 Requisitos: credenciales AWS activas.
-Ejecutar:   python main.py
+Ejecutar (desde workshop/):   python -m s1_vector_bucket.main
 """
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
 
 import boto3
 

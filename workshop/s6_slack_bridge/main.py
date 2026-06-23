@@ -10,12 +10,10 @@ la función Lambda y una API HTTP que la expone.
 
 Requisitos: pasos 1-5 (el agente desplegado). Secretos de Slack por entorno:
   export SLACK_SIGNING_SECRET=...   SLACK_BOT_TOKEN=xoxb-...   SLACK_BOT_USER_ID=U...
-Ejecutar:   python main.py
+Ejecutar (desde workshop/):   python -m s6_slack_bridge.main
 """
-import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
 
 import io
 import json

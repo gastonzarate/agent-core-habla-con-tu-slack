@@ -8,12 +8,9 @@ Es IDEMPOTENTE: el id de cada documento es "canal-ts", así que re-ingestar
 sobrescribe (no duplica). Por eso puede releer sin llevar estado.
 
 Requisitos: haber corrido el paso 6 (la Lambda debe existir).
-Ejecutar:   python main.py
+Ejecutar (desde workshop/):   python -m s7_auto_ingest.main
 """
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
 
 import json
 

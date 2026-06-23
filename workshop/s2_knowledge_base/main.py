@@ -9,12 +9,9 @@ Creamos:
   3. una data source CUSTOM → para inyectar documentos directo por API.
 
 Requisitos: haber corrido el paso 1.
-Ejecutar:   python main.py
+Ejecutar (desde workshop/):   python -m s2_knowledge_base.main
 """
-import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
 
 import json
 import time

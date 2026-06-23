@@ -8,15 +8,15 @@ Creamos el IAM role de ejecución del runtime y mostramos (o ejecutamos, con
   • configure → genera la config (.bedrock_agentcore.yaml)
   • deploy    → empaqueta y publica (direct_code_deploy, sin Docker local)
 
-Requisitos: pasos 1-4. Tener instalado el CLI:  pip install bedrock-agentcore-starter-toolkit
-Ejecutar:   python main.py          (muestra los comandos)
-            python main.py --run    (crea el role y ejecuta el deploy)
+Requisitos: pasos 1-4. CLI instalado (con Python 3.13):
+  uv tool install --python 3.13 bedrock-agentcore-starter-toolkit==0.3.9
+Ejecutar (desde workshop/):   python -m s5_deploy_runtime.main          (muestra los comandos)
+                              python -m s5_deploy_runtime.main --run    (crea el role y despliega)
 """
 
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
 
 import json
 import subprocess

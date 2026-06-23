@@ -39,46 +39,42 @@ aws sts get-caller-identity       # confirma que estás logueado
 **Acceso a modelos en Bedrock** (consola → Bedrock → Model access): habilitá
 **Titan Text Embeddings v2** y **Claude Sonnet 4.6** en `us-east-1`.
 
+> **Todos los pasos se corren desde `workshop/`** con `python -m <carpeta>.main`
+> (así encuentran `constants.py`). No hace falta `cd` a cada carpeta.
+
 ---
 
 ## Paso 0 · Borrar todo (empezar limpio)
 
 ```bash
-cd s0_delete_all
-python main.py
+python -m s0_delete_all.main
 ```
-
----
 
 ## Paso 1 · Base vectorial (S3 Vectors)
 
 ```bash
-cd ../s1_vector_bucket
-python main.py
+python -m s1_vector_bucket.main
 ```
 Crea el vector bucket y el índice (dim 1024, cosine).
 
 ## Paso 2 · Knowledge Base
 
 ```bash
-cd ../s2_knowledge_base
-python main.py
+python -m s2_knowledge_base.main
 ```
 Crea el IAM role, el Knowledge Base sobre S3 Vectors y una data source CUSTOM.
 
 ## Paso 3 · Ingestar y preguntar (el "aha")
 
 ```bash
-cd ../s3_ingest_and_query
-python main.py
+python -m s3_ingest_and_query.main
 ```
 Ingesta unos mensajes y pregunta: el retrieval encuentra el correcto, con cita.
 
 ## Paso 4 · El agente (local)
 
 ```bash
-cd ../s4_agent
-python main.py
+python -m s4_agent.main
 ```
 El agente decide usar la tool `ask_kb` y Claude redacta la respuesta.
 
@@ -90,20 +86,18 @@ uv tool install --python 3.13 bedrock-agentcore-starter-toolkit==0.3.9
 ```
 Luego:
 ```bash
-cd ../s5_deploy_runtime
-python main.py            # muestra los comandos
-python main.py --run      # crea el role y despliega (1-2 min)
+python -m s5_deploy_runtime.main            # muestra los comandos
+python -m s5_deploy_runtime.main --run      # crea el role y despliega (1-2 min)
 ```
 
 ## Paso 6 · Conectar Slack
 
 Necesitás los secretos de tu Slack App (Signing Secret y Bot Token):
 ```bash
-cd ../s6_slack_bridge
 export SLACK_SIGNING_SECRET=...        # Basic Information → App Credentials
 export SLACK_BOT_TOKEN=xoxb-...        # OAuth & Permissions (tras instalar)
 export SLACK_BOT_USER_ID=U...          # auth.test, o el user id del bot
-python main.py
+python -m s6_slack_bridge.main
 ```
 Imprime la **Request URL**. Pegala en la Slack App (Event Subscriptions +
 Slash Commands) y reinstalá la app. (Ver `utils/manifest.yaml` para los scopes.)
@@ -111,8 +105,7 @@ Slash Commands) y reinstalá la app. (Ver `utils/manifest.yaml` para los scopes.
 ## Paso 7 · Ingesta automática
 
 ```bash
-cd ../s7_auto_ingest
-python main.py
+python -m s7_auto_ingest.main
 ```
 Crea la regla de EventBridge (cada 30 min) y dispara una ingesta de prueba.
 
@@ -128,6 +121,6 @@ En un canal donde esté el bot:
 ## Empezar de nuevo
 
 ```bash
-cd s0_delete_all && python main.py
+python -m s0_delete_all.main
 ```
 Borra todo para volver a arrancar (útil porque el sandbox se resetea a diario).

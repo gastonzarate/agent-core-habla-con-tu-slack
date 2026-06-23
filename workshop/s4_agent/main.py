@@ -8,13 +8,8 @@ El agente está en agent.py (esta carpeta), con dos tools: ask_kb e ingest_slack
 Acá lo corremos LOCAL, sin desplegar nada.
 
 Requisitos: pasos 1-3. Acceso a Claude en Bedrock.
-Ejecutar:   python main.py
+Ejecutar (desde workshop/):   python -m s4_agent.main
 """
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
-
 import os
 
 import boto3
@@ -35,7 +30,7 @@ os.environ["DATA_SOURCE_ID"] = ds_id
 os.environ["MODEL_ID"] = MODEL_ID
 
 # importamos el agente DESPUÉS de setear el entorno
-from agent import _agent, _extract_text
+from s4_agent.agent import _agent, _extract_text
 
 _agent.callback_handler = lambda **_: None  # silenciamos el stream automático
 
