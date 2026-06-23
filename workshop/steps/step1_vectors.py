@@ -10,13 +10,14 @@ Es 100% serverless y se paga por uso. Sin servidores que mantener.
 
 Ejecutar:  python workshop/steps/step1_vectors.py
 """
+
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # permite importar config.py
 
 import boto3
 from botocore.exceptions import ClientError
-
 from config import CFG, REGION, save_state
 
 
@@ -46,7 +47,7 @@ def main():
             vectorBucketName=CFG.vector_bucket,
             indexName=CFG.vector_index,
             dataType="float32",
-            dimension=CFG.embedding_dim,   # 1024 = Titan Text Embeddings v2
+            dimension=CFG.embedding_dim,  # 1024 = Titan Text Embeddings v2
             distanceMetric="cosine",
         )
         print("   creado ✅")

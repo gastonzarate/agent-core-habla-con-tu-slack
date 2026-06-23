@@ -62,12 +62,13 @@ def ingest_documents(region, kb_id, ds_id, kb_docs):
     return total
 
 
-def retrieve(region, kb_id, query, k=5):
+def retrieve(region, kb_id, query, k=5, channel=None):
     rt = boto3.client("bedrock-agent-runtime", region_name=region)
+    vsc = {"numberOfResults": k, "overrideSearchType": "SEMANTIC"}
+    if channel:  # filtra por canal (metadata) — útil para aislar una demo
+        vsc["filter"] = {"equals": {"key": "channel", "value": channel}}
     return rt.retrieve(
         knowledgeBaseId=kb_id,
         retrievalQuery={"text": query},
-        retrievalConfiguration={
-            "vectorSearchConfiguration": {"numberOfResults": k, "overrideSearchType": "SEMANTIC"}
-        },
+        retrievalConfiguration={"vectorSearchConfiguration": vsc},
     )
