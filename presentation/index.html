@@ -174,7 +174,25 @@ s3v.create_index(
         </aside>
       </section>
 
-      <!-- 6 · HANDS-ON PASO 2: KNOWLEDGE BASE -->
+      <!-- 6 · CÓMO FUNCIONA UNA BASE VECTORIAL (3D) -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Cómo funciona · base vectorial</span>
+        <h2>Los mensajes se <strong>agrupan por significado</strong></h2>
+        <div class="viz" id="vectordb"></div>
+        <p class="muted center" style="font-size:0.6em; margin-top:0.3em;">
+          Cada mensaje es un punto en el espacio. Una pregunta cae cerca de los mensajes
+          <em>parecidos</em> → buscar = encontrar los <strong>vecinos más cercanos</strong>.
+        </p>
+        <aside class="notes">
+          Acá explicás el concepto: cada mensaje se convierte en un vector y queda ubicado en
+          este espacio. Los que hablan de lo mismo (deploys, bugs, clientes) se agrupan solos.
+          Cuando preguntás, tu pregunta también se vuelve un punto y cae cerca de su grupo: el
+          retrieval es literalmente "traeme los puntos más cercanos" (las líneas blancas). No
+          busca palabras, busca cercanía de significado. Mové el mouse para rotar.
+        </aside>
+      </section>
+
+      <!-- 7 · HANDS-ON PASO 2: KNOWLEDGE BASE -->
       <section data-background-color="#0a0e17">
         <span class="step-badge">Hands-on · Paso 2</span>
         <h2>Crear el <strong>Knowledge Base</strong></h2>
@@ -495,5 +513,6 @@ events.put_targets(Rule="slackrag-ingest-30min",
     });
   </script>
   <script src="js/vectorspace.js"></script>
+  <script src="js/vectordb.js"></script>
 </body>
 </html>
