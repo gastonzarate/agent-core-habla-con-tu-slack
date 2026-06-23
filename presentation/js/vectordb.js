@@ -24,7 +24,7 @@
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 1000);
-    camera.position.set(0, 0, 92);
+    camera.position.set(0, 0, 108);
     const group = new THREE.Group();
     scene.add(group);
 
@@ -108,8 +108,8 @@
     const tmp = new THREE.Vector3();
     function frame(t) {
       group.rotation.y = t * 0.00018;
-      camera.position.x += (mx * 34 - camera.position.x) * 0.05;
-      camera.position.y += (-my * 22 - camera.position.y) * 0.05;
+      camera.position.x += (mx * 20 - camera.position.x) * 0.05;
+      camera.position.y += (-my * 14 - camera.position.y) * 0.05;
       camera.lookAt(0, 0, 0);
       group.updateMatrixWorld();
       const pulse = 0.5 + Math.sin(t * 0.005) * 0.5;
