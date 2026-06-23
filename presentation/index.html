@@ -234,29 +234,10 @@ s3v.create_index(
       <section data-background-color="#0a0e17">
         <span class="kicker">Knowledge Base · qué hace por dentro</span>
         <h2>Vos le das el mensaje. <strong>Él hace el resto.</strong></h2>
-        <div class="pipeline">
-          <div class="stage">
-            <div class="ico">📄</div><div class="t">Mensaje</div><div class="s">texto de Slack</div>
-          </div>
-          <div class="pipe"><span class="dot"></span></div>
-          <div class="kb-group">
-            <span class="kb-legend">Knowledge Base · gestionado por AWS</span>
-            <div class="stage kb">
-              <div class="ico">✂️</div><div class="t">Chunking</div><div class="s">parte el texto</div>
-            </div>
-            <div class="pipe"><span class="dot" style="animation-delay:.55s"></span></div>
-            <div class="stage kb">
-              <div class="ico">🔢</div><div class="t">Embeddings</div><div class="s">Titan v2 · 1024d</div>
-            </div>
-            <div class="pipe"><span class="dot" style="animation-delay:1.1s"></span></div>
-            <div class="stage kb">
-              <div class="ico">🧭</div><div class="t">S3 Vectors</div><div class="s">indexa</div>
-            </div>
-          </div>
-        </div>
-        <p class="muted center" style="font-size:0.6em; margin-top:0.8em;">
-          Cortar, vectorizar e indexar — las 3 etapas de adentro — <strong>no las escribimos</strong>.
-          Nosotros solo entregamos el mensaje.
+        <div class="viz" id="kbpipeline"></div>
+        <p class="muted center" style="font-size:0.6em; margin-top:0.3em;">
+          El mensaje se parte en <em>chunks</em>, se convierte en <em>embeddings</em> y se
+          indexa en S3 Vectors. <strong>Todo eso lo hace el Knowledge Base, solo.</strong>
         </p>
         <aside class="notes">
           Esta es la versión visual del paso anterior. El mensaje entra crudo; el Knowledge Base
@@ -550,5 +531,6 @@ events.put_targets(Rule="slackrag-ingest-30min",
   </script>
   <script src="js/vectorspace.js"></script>
   <script src="js/vectordb.js"></script>
+  <script src="js/kbpipeline.js"></script>
 </body>
 </html>
