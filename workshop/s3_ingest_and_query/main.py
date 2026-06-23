@@ -13,12 +13,16 @@ así que el resultado es directo.
 Requisitos: haber corrido los pasos 1 y 2.
 Ejecutar:   python main.py
 """
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
+
 import time
 
 import boto3
 
-REGION = "us-east-1"
-KB_NAME = "slackrag-kb"
+from constants import REGION, KB_NAME
 
 MENSAJES = [
     "ana: El deploy de prod quedó para el viernes 18hs.",

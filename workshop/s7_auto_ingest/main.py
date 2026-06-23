@@ -7,16 +7,19 @@ donde está el bot y los ingesta al Knowledge Base.
 Es IDEMPOTENTE: el id de cada documento es "canal-ts", así que re-ingestar
 sobrescribe (no duplica). Por eso puede releer sin llevar estado.
 
-Requisitos: haber corrido el paso 6 (la Lambda slackrag-bridge debe existir).
+Requisitos: haber corrido el paso 6 (la Lambda debe existir).
 Ejecutar:   python main.py
 """
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
+
 import json
 
 import boto3
 
-REGION = "us-east-1"
-FUNC = "slackrag-bridge"
-RULE = "slackrag-ingest-30min"
+from constants import REGION, FUNC, RULE
 
 acct = boto3.client("sts", region_name=REGION).get_caller_identity()["Account"]
 func_arn = f"arn:aws:lambda:{REGION}:{acct}:function:{FUNC}"

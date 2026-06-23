@@ -8,17 +8,15 @@ Knowledge Base, índice y bucket de S3 Vectors, y los 3 IAM roles.
 
 Ejecutar:  python main.py
 """
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
+
 import boto3
 from botocore.exceptions import ClientError
 
-REGION = "us-east-1"
-BUCKET = "slackrag-vectors"
-INDEX = "slackrag-index"
-KB_NAME = "slackrag-kb"
-FUNC = "slackrag-bridge"
-RULE = "slackrag-ingest-30min"
-API_NAME = "slackrag-api"
-ROLES = ["slackrag-bridge-role", "slackrag-runtime-role", "slackrag-kb-role"]
+from constants import REGION, BUCKET, INDEX, KB_NAME, FUNC, RULE, API_NAME, ROLES, AGENT_NAME
 
 
 def step(msg, fn):
@@ -45,8 +43,7 @@ s3v = boto3.client("s3vectors", region_name=REGION)
 iam = boto3.client("iam")
 
 # 1) EventBridge (sacar targets antes de borrar la regla)
-step("Regla EventBridge", lambda: (events.remove_targets(Rule=RULE, Ids=["1"]),
-                                    events.delete_rule(Name=RULE)))
+step("Regla EventBridge", lambda: (events.remove_targets(Rule=RULE, Ids=["1"]), events.delete_rule(Name=RULE)))
 
 # 2) API Gateway
 step("API Gateway", lambda: api.delete_api(
@@ -58,7 +55,7 @@ step("Lambda", lambda: lam.delete_function(FunctionName=FUNC))
 # 4) AgentCore Runtime
 step("AgentCore Runtime", lambda: ac.delete_agent_runtime(
     agentRuntimeId=next(r["agentRuntimeId"] for r in ac.list_agent_runtimes()["agentRuntimes"]
-                        if r["agentRuntimeName"] == "slackrag")))
+                        if r["agentRuntimeName"] == AGENT_NAME)))
 
 # 5) Knowledge Base (borra también su data source)
 step("Knowledge Base", lambda: ba.delete_knowledge_base(

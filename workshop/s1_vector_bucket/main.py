@@ -11,12 +11,14 @@ Es 100% serverless: se paga por uso, sin servidores que mantener.
 Requisitos: credenciales AWS activas.
 Ejecutar:   python main.py
 """
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
+
 import boto3
 
-REGION = "us-east-1"
-BUCKET = "slackrag-vectors"
-INDEX = "slackrag-index"
-DIM = 1024  # Titan Text Embeddings v2 produce vectores de 1024 números
+from constants import REGION, BUCKET, INDEX, EMBED_DIM
 
 s3 = boto3.client("s3vectors", region_name=REGION)
 
@@ -25,12 +27,12 @@ print(f"📦 Creando vector bucket: {BUCKET}")
 s3.create_vector_bucket(vectorBucketName=BUCKET)
 
 # 2) El índice donde se busca por similitud
-print(f"🧭 Creando índice: {INDEX}  (dim={DIM}, distancia=cosine)")
+print(f"🧭 Creando índice: {INDEX}  (dim={EMBED_DIM}, distancia=cosine)")
 s3.create_index(
     vectorBucketName=BUCKET,
     indexName=INDEX,
     dataType="float32",
-    dimension=DIM,
+    dimension=EMBED_DIM,
     distanceMetric="cosine",
 )
 

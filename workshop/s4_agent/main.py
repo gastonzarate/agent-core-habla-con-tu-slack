@@ -10,12 +10,17 @@ Acá lo corremos LOCAL, sin desplegar nada.
 Requisitos: pasos 1-3. Acceso a Claude en Bedrock.
 Ejecutar:   python main.py
 """
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # para importar constants.py
+
 import os
 
 import boto3
 
-REGION = "us-east-1"
-KB_NAME = "slackrag-kb"
+from constants import REGION, KB_NAME, MODEL_ID
+
 PREGUNTA = "¿cuándo es el deploy de producción y qué hay que hacer antes?"
 
 # el agente lee KB_ID / DATA_SOURCE_ID del entorno → los buscamos por nombre
@@ -27,7 +32,7 @@ ds_id = ba.list_data_sources(knowledgeBaseId=kb_id)["dataSourceSummaries"][0]["d
 os.environ["AWS_REGION"] = REGION
 os.environ["KB_ID"] = kb_id
 os.environ["DATA_SOURCE_ID"] = ds_id
-os.environ.setdefault("MODEL_ID", "us.anthropic.claude-sonnet-4-6")
+os.environ["MODEL_ID"] = MODEL_ID
 
 # importamos el agente DESPUÉS de setear el entorno
 from agent import _agent, _extract_text
