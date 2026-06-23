@@ -358,6 +358,38 @@ chat_postMessage(channel, answer, thread_ts)</code></pre>
         </aside>
       </section>
 
+      <!-- 11 · HANDS-ON PASO 7: INGESTA AUTOMÁTICA -->
+      <section data-background-color="#0a0e17">
+        <span class="step-badge">Hands-on · Paso 7</span>
+        <h2>Que se actualice <strong>solo</strong></h2>
+        <div class="handson">
+          <div class="explain">
+            <p>Una regla de <em>EventBridge</em> dispara la ingesta cada <b>30 minutos</b>.</p>
+            <ul>
+              <li>lee los canales donde está el bot</li>
+              <li>normaliza e ingesta al KB</li>
+            </ul>
+            <p><b>Idempotente</b>: el id es <code>canal‑ts</code>, así que re‑ingestar <em>sobrescribe</em>, no duplica. Sin llevar estado.</p>
+          </div>
+          <div class="code">
+            <pre><code data-trim data-line-numbers="1-4|6-8" class="language-python">events.put_rule(
+    Name="slackrag-ingest-30min",
+    ScheduleExpression="rate(30 minutes)",
+)
+
+events.put_targets(Rule="slackrag-ingest-30min",
+    Targets=[{"Arn": bridge_lambda,
+              "Input": '{"__scheduled_ingest__": true}'}])</code></pre>
+            <div class="run">python workshop/steps/step7_schedule.py</div>
+          </div>
+        </div>
+        <aside class="notes">
+          Cierre del hands-on: el sistema ahora se alimenta solo. Recalcar la idempotencia (id canal-ts
+          → upsert) que evita duplicados sin estado. Tras este paso: el bot responde sobre datos reales
+          que se refrescan cada 30 min. Demo final: @mención en Slack.
+        </aside>
+      </section>
+
     </div>
   </div>
 
