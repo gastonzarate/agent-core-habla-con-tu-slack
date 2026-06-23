@@ -233,17 +233,18 @@ s3v.create_index(
       <!-- 8 · EL KNOWLEDGE BASE, GRÁFICAMENTE -->
       <section data-background-color="#0a0e17">
         <span class="kicker">Knowledge Base · qué hace por dentro</span>
-        <h2>Vos le das el mensaje. <strong>Él hace el resto.</strong></h2>
+        <h2>Vos le das el <strong>documento</strong>. Él hace el resto.</h2>
         <div class="viz" id="kbpipeline"></div>
         <p class="muted center" style="font-size:0.6em; margin-top:0.3em;">
-          El mensaje se parte en <em>chunks</em>, se convierte en <em>embeddings</em> y se
-          indexa en S3 Vectors. <strong>Todo eso lo hace el Knowledge Base, solo.</strong>
+          Le entregás tus <em>documentos</em> (acá, cada mensaje). El Knowledge Base los
+          parte si son largos, los vuelve <em>embeddings</em> y los indexa. <strong>Todo solo.</strong>
         </p>
         <aside class="notes">
-          Esta es la versión visual del paso anterior. El mensaje entra crudo; el Knowledge Base
-          lo corta en chunks, genera los embeddings con Titan (los vectores de la slide del espacio 3D)
-          y los indexa en S3 Vectors. Recalcá: todo lo de adentro del recuadro punteado lo hace AWS,
-          nosotros solo le pasamos el texto. Eso es lo que ahorra código y hace esto confiable.
+          Versión visual del paso anterior. Le entregás tus documentos (en este caso, cada mensaje
+          de Slack es un documento). El Knowledge Base los parte en chunks si son largos, genera los
+          embeddings con Titan (los vectores del espacio 3D) y los indexa en S3 Vectors. Recalcá: todo
+          eso lo hace AWS solo; nosotros solo entregamos los documentos. Aclará que como los mensajes
+          son cortos, muchas veces cada mensaje ya es un chunk — el chunking pesa en documentos largos.
         </aside>
       </section>
 

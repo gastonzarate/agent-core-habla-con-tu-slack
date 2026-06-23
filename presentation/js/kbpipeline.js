@@ -88,7 +88,7 @@
       return d;
     }
     const labels = [
-      { el: label("Mensaje", "#9fb4d4"), v: new THREE.Vector3(-42, 13, 0) },
+      { el: label("Documento", "#9fb4d4"), v: new THREE.Vector3(-42, 13, 0) },
       { el: label("chunking → embeddings", "#e8eef6"), v: new THREE.Vector3(0, 13, 0) },
       { el: label("S3 Vectors · índice", "#38e0c6"), v: new THREE.Vector3(34, 14, 0) },
     ];
