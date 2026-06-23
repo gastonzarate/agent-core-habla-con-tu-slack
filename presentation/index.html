@@ -83,6 +83,58 @@
         </aside>
       </section>
 
+      <!-- 4 · ARQUITECTURA -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Arquitectura · todo serverless</span>
+        <h2>Cómo funciona, de punta a punta</h2>
+        <div class="arch">
+
+          <div class="lane">
+            <div class="lane-label">Consulta</div>
+            <div class="flow">
+              <div class="node slack"><span class="t">Slack</span><span class="s">@mención</span></div>
+              <span class="arrow">→</span>
+              <div class="node glue"><span class="t">API Gateway</span><span class="s">+ Lambda‑puente</span></div>
+              <span class="arrow">→</span>
+              <div class="node managed"><span class="t">AgentCore Runtime</span><span class="s">agente Strands</span></div>
+              <span class="arrow">→</span>
+              <div class="node managed"><span class="t">Knowledge Base</span><span class="s">S3 Vectors · Titan v2</span></div>
+              <span class="arrow">→</span>
+              <div class="node managed"><span class="t">Claude</span><span class="s">respuesta + citas</span></div>
+            </div>
+          </div>
+
+          <div class="lane fragment">
+            <div class="lane-label">Ingesta</div>
+            <div class="flow">
+              <div class="node managed"><span class="t">EventBridge</span><span class="s">cada 30 min</span></div>
+              <span class="arrow">→</span>
+              <div class="node glue"><span class="t">Lambda</span><span class="s">lee los canales</span></div>
+              <span class="arrow">→</span>
+              <div class="node managed"><span class="t">Knowledge Base</span><span class="s">embeddings + índice</span></div>
+              <span class="arrow" style="opacity:0">→</span>
+              <div class="node" style="opacity:0">.</div>
+              <span class="arrow" style="opacity:0">→</span>
+              <div class="node" style="opacity:0">.</div>
+            </div>
+          </div>
+
+          <div class="legend fragment">
+            <i><span class="dot" style="background:#6b46c1"></span>Slack</i>
+            <i><span class="dot" style="background:var(--accent2)"></span>Nuestro código (mínimo)</i>
+            <i><span class="dot" style="background:var(--accent)"></span>Gestionado por AWS</i>
+          </div>
+        </div>
+        <p class="muted fragment center" style="font-size:0.7em; margin-top:0.6em;">
+          Lo único que escribimos es el <em>pegamento</em>. Todo lo demás lo gestiona AWS — <strong>casi sin infra</strong>.
+        </p>
+        <aside class="notes">
+          Recorrer la fila de consulta de izq a der (la pregunta entra, el agente recupera del KB,
+          Claude responde con citas). Después revelar la ingesta automática. Cerrar con "lo único
+          propio es el pegamento" → vincula con el costo y el mensaje de Craftech.
+        </aside>
+      </section>
+
     </div>
   </div>
 

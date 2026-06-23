@@ -83,6 +83,31 @@ html, body { background: var(--bg); }
 .slack .mention { color: var(--accent2); }
 .slack .cite { color: var(--muted); font-size: 0.85em; margin-top: 6px; }
 
+/* Diagrama de arquitectura */
+.arch { display: flex; flex-direction: column; gap: 14px; margin-top: 0.3em; font-size: 0.5em; }
+.lane { display: flex; align-items: center; gap: 8px; }
+.lane-label {
+  writing-mode: vertical-rl; transform: rotate(180deg); text-align: center;
+  font-size: 0.85em; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; padding: 4px 0;
+}
+.flow { display: flex; align-items: center; gap: 8px; flex: 1; flex-wrap: nowrap; }
+.node {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 14px; min-width: 0; flex: 1; text-align: center; line-height: 1.25;
+}
+.node .t { font-weight: 800; color: var(--fg); display: block; font-size: 1.05em; }
+.node .s { color: var(--muted); font-size: 0.82em; }
+.node.slack { border-color: #6b46c1; }
+.node.glue  { border-color: var(--accent2); }       /* nuestro pegamento */
+.node.glue .t { color: var(--accent2); }
+.node.managed { border-color: var(--accent); }       /* AgentCore / Bedrock */
+.node.managed .t { color: var(--accent); }
+.arrow { color: var(--muted); font-size: 1.3em; flex: none; }
+.arch .legend { display: flex; gap: 22px; justify-content: center; font-size: 0.8em; color: var(--muted); margin-top: 6px; }
+.arch .legend i { font-style: normal; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
 .big { font-size: 1.5em; line-height: 1.2; }
 .dim { opacity: 0.45; }
 .reveal ul { margin-left: 1em; }
