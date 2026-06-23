@@ -21,23 +21,40 @@ s7_auto_ingest      ingesta automática cada 30 min
 
 ## 0 · Setup (una sola vez)
 
-**Python + entorno virtual:**
+Usás una **cuenta de prueba** ya provista, con la consola de AWS abierta.
+Asegurate de tener la región **us-east-1** seleccionada (arriba a la derecha).
+
+### Opción A · CloudShell — todo en la consola (recomendado)
+
+En la consola abrí **CloudShell** (ícono de terminal, arriba a la derecha).
+Ya trae tus credenciales: no hay que configurar nada.
+
 ```bash
-cd workshop
-python3 -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt  # todas las dependencias de los pasos, en un solo lugar
+git clone <URL-del-repo> && cd poc_aws_slack/workshop
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-**Login a AWS (SSO):**
+### Opción B · Local (con credenciales provistas)
+
+En tu máquina:
+
 ```bash
-aws sso login --profile sandbox
-export AWS_PROFILE=sandbox
-aws sts get-caller-identity       # confirma que estás logueado
+git clone <URL-del-repo> && cd poc_aws_slack/workshop
+python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+aws configure     # pegá Access Key / Secret de la cuenta de prueba
+# (o si te dan SSO: aws sso login --profile <perfil> && export AWS_PROFILE=<perfil>)
 ```
 
-**Acceso a modelos en Bedrock** (consola → Bedrock → Model access): habilitá
-**Titan Text Embeddings v2** y **Claude Sonnet 4.6** en `us-east-1`.
+### Verificá el acceso (en cualquiera de las dos)
+
+```bash
+aws sts get-caller-identity       # debe mostrar la cuenta de prueba
+```
+
+**Modelos en Bedrock**: la cuenta de prueba ya viene con **Titan Text
+Embeddings v2** y **Claude Sonnet 4.6** habilitados en `us-east-1`.
 
 > **Todos los pasos se corren desde `workshop/`** con `python -m <carpeta>.main`
 > (así encuentran `constants.py`). No hace falta `cd` a cada carpeta.
@@ -80,8 +97,12 @@ El agente decide usar la tool `ask_kb` y Claude redacta la respuesta.
 
 ## Paso 5 · Deploy a AgentCore Runtime
 
-El CLI de deploy se instala aparte (con Python 3.13 — crashea en 3.14):
+Instalá el CLI de deploy:
 ```bash
+# CloudShell / Linux / Python < 3.14:
+pip install bedrock-agentcore-starter-toolkit==0.3.9
+
+# Local con Python 3.14 (el CLI crashea ahí): instalalo con 3.13
 uv tool install --python 3.13 bedrock-agentcore-starter-toolkit==0.3.9
 ```
 Luego:
