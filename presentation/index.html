@@ -230,7 +230,43 @@ s3v.create_index(
         </aside>
       </section>
 
-      <!-- 7 · HANDS-ON PASO 3: INGESTAR Y PREGUNTAR (AHA) -->
+      <!-- 8 · EL KNOWLEDGE BASE, GRÁFICAMENTE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Knowledge Base · qué hace por dentro</span>
+        <h2>Vos le das el mensaje. <strong>Él hace el resto.</strong></h2>
+        <div class="pipeline">
+          <div class="stage">
+            <div class="ico">📄</div><div class="t">Mensaje</div><div class="s">texto de Slack</div>
+          </div>
+          <div class="pipe"><span class="dot"></span></div>
+          <div class="kb-group">
+            <span class="kb-legend">Knowledge Base · gestionado por AWS</span>
+            <div class="stage kb">
+              <div class="ico">✂️</div><div class="t">Chunking</div><div class="s">parte el texto</div>
+            </div>
+            <div class="pipe"><span class="dot" style="animation-delay:.55s"></span></div>
+            <div class="stage kb">
+              <div class="ico">🔢</div><div class="t">Embeddings</div><div class="s">Titan v2 · 1024d</div>
+            </div>
+            <div class="pipe"><span class="dot" style="animation-delay:1.1s"></span></div>
+            <div class="stage kb">
+              <div class="ico">🧭</div><div class="t">S3 Vectors</div><div class="s">indexa</div>
+            </div>
+          </div>
+        </div>
+        <p class="muted center" style="font-size:0.6em; margin-top:0.8em;">
+          Cortar, vectorizar e indexar — las 3 etapas de adentro — <strong>no las escribimos</strong>.
+          Nosotros solo entregamos el mensaje.
+        </p>
+        <aside class="notes">
+          Esta es la versión visual del paso anterior. El mensaje entra crudo; el Knowledge Base
+          lo corta en chunks, genera los embeddings con Titan (los vectores de la slide del espacio 3D)
+          y los indexa en S3 Vectors. Recalcá: todo lo de adentro del recuadro punteado lo hace AWS,
+          nosotros solo le pasamos el texto. Eso es lo que ahorra código y hace esto confiable.
+        </aside>
+      </section>
+
+      <!-- 9 · HANDS-ON PASO 3: INGESTAR Y PREGUNTAR (AHA) -->
       <section data-background-color="#0a0e17">
         <span class="step-badge">Hands-on · Paso 3</span>
         <h2>Ingestar y <strong>preguntar</strong> 🪄</h2>
