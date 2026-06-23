@@ -1,0 +1,89 @@
+:root {
+  --bg: #0a0e17;
+  --bg2: #0f1626;
+  --fg: #e8eef6;
+  --muted: #93a4bf;
+  --accent: #38e0c6;   /* teal Craftech */
+  --accent2: #7c9cf5;  /* periwinkle */
+  --danger: #ff6b6b;
+  --card: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.10);
+}
+
+/* Fondo + canvas three.js */
+html, body { background: var(--bg); }
+#bg-canvas {
+  position: fixed; inset: 0; width: 100vw; height: 100vh;
+  z-index: 0; pointer-events: none;
+}
+.reveal { z-index: 1; }
+
+.reveal {
+  font-family: -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+  color: var(--fg);
+}
+.reveal .slides section { text-align: left; }
+
+.reveal h1, .reveal h2, .reveal h3 {
+  color: var(--fg); text-transform: none; letter-spacing: -0.02em; font-weight: 800;
+}
+.reveal h1 { font-size: 2.6em; line-height: 1.05; }
+.reveal h2 { font-size: 1.8em; }
+.reveal strong { color: var(--accent); }
+.reveal em { color: var(--accent2); font-style: normal; }
+.reveal a { color: var(--accent); }
+
+.kicker {
+  display: inline-block; font-size: 0.5em; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 0.4em;
+}
+.muted { color: var(--muted); }
+.center { text-align: center !important; }
+
+/* Marca Craftech */
+.brand-tag {
+  position: fixed; bottom: 22px; right: 28px; z-index: 5;
+  font-size: 16px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700;
+}
+.brand-tag b { color: var(--accent); }
+
+/* Hero */
+.hero h1 { font-size: 3.1em; }
+.hero .sub { font-size: 1.25em; color: var(--muted); margin-top: 0.6em; max-width: 18em; }
+.hero .badge {
+  display: inline-block; margin-top: 1.2em; padding: 0.45em 0.9em; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--card); color: var(--fg);
+  font-size: 0.7em; letter-spacing: 0.04em;
+}
+
+/* Tarjetas / pasos */
+.cards { display: flex; gap: 22px; margin-top: 0.6em; }
+.card {
+  flex: 1; background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 26px 24px;
+}
+.card .n { color: var(--accent); font-weight: 800; font-size: 0.8em; letter-spacing: 0.1em; }
+.card h3 { margin: 0.2em 0 0.3em; font-size: 1.1em; }
+.card p { color: var(--muted); font-size: 0.7em; margin: 0; }
+
+/* Mock de Slack */
+.slack {
+  background: #1a1d29; border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px 20px; max-width: 20em; font-size: 0.62em; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.slack .msg { display: flex; gap: 12px; margin: 10px 0; align-items: flex-start; }
+.slack .av { width: 36px; height: 36px; border-radius: 8px; flex: none; }
+.slack .av.u { background: linear-gradient(135deg,#7c9cf5,#38e0c6); }
+.slack .av.b { background: linear-gradient(135deg,#38e0c6,#1a8f7d); }
+.slack .name { font-weight: 700; color: var(--fg); }
+.slack .name .bot { font-size: 0.7em; background: var(--accent); color: #06231e;
+  border-radius: 4px; padding: 1px 6px; margin-left: 6px; font-weight: 800; }
+.slack .body { color: #cdd6e6; line-height: 1.45; }
+.slack .mention { color: var(--accent2); }
+.slack .cite { color: var(--muted); font-size: 0.85em; margin-top: 6px; }
+
+.big { font-size: 1.5em; line-height: 1.2; }
+.dim { opacity: 0.45; }
+.reveal ul { margin-left: 1em; }
+.reveal li { margin: 0.35em 0; }

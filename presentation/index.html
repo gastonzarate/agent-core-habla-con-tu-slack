@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hablá con tu Slack — Craftech</title>
+  <link rel="stylesheet" href="vendor/reveal.css">
+  <link rel="stylesheet" href="vendor/theme-black.css" id="theme">
+  <link rel="stylesheet" href="vendor/monokai.css">
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div class="brand-tag"><b>craftech</b> · aws genai</div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- 1 · HERO -->
+      <section class="hero center" data-background-color="#0a0e17">
+        <span class="kicker">Craftech · AWS GenAI · en vivo</span>
+        <h1>Hablá con tu <strong>Slack</strong>,<br>Teams o lo que uses</h1>
+        <p class="sub center" style="margin-left:auto;margin-right:auto;">
+          Agentes de IA <em>serverless</em> en AWS con Amazon Bedrock AgentCore
+        </p>
+        <div class="badge">🗓️ 24–25 junio 2026 · Workshop hands-on</div>
+        <aside class="notes">
+          Bienvenida. Hoy van a ver —y opcionalmente construir— un agente que responde
+          sobre el conocimiento de su equipo. Todo serverless, todo AWS. Arrancamos con una demo.
+        </aside>
+      </section>
+
+      <!-- 2 · DEMO EN VIVO -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Demo en vivo</span>
+        <h2>Primero, veámoslo funcionando</h2>
+        <div style="display:flex; gap:40px; align-items:center; margin-top:0.5em;">
+          <div class="slack">
+            <div class="msg">
+              <div class="av u"></div>
+              <div>
+                <div class="name">Gastón</div>
+                <div class="body"><span class="mention">@slack-rag</span> ¿qué se decidió sobre el deploy de prod?</div>
+              </div>
+            </div>
+            <div class="msg fragment">
+              <div class="av b"></div>
+              <div>
+                <div class="name">slack-rag <span class="bot">APP</span></div>
+                <div class="body">El deploy de prod quedó para el <b>viernes 18hs</b>, con freeze de código el jueves.</div>
+                <div class="cite">📎 Fuentes: #general · #ai-operaciones</div>
+              </div>
+            </div>
+          </div>
+          <div class="muted fragment" style="flex:1; font-size:0.8em;">
+            <p>Le preguntás en lenguaje natural.</p>
+            <p>Responde <em>en el hilo</em>, con <strong>citas</strong> al mensaje original.</p>
+            <p>Sin que nadie revise 10.000 mensajes a mano.</p>
+          </div>
+        </div>
+        <aside class="notes">
+          Acá va la demo REAL en Slack (@mención). Si falla la red/cuotas: este slide es el fallback.
+          Mostrar pregunta → respuesta con citas en el hilo.
+        </aside>
+      </section>
+
+      <!-- 3 · EL PROBLEMA -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">El problema</span>
+        <h2>El conocimiento de tu equipo<br>se está <strong>muriendo en Slack</strong></h2>
+        <ul style="margin-top:0.6em; font-size:0.9em;">
+          <li class="fragment">Decisiones que se tomaron… y nadie recuerda dónde.</li>
+          <li class="fragment">Contexto de proyectos enterrado en hilos viejos.</li>
+          <li class="fragment">La misma pregunta, respondida por décima vez.</li>
+          <li class="fragment">El que se va, se lleva lo que sabía.</li>
+        </ul>
+        <p class="big fragment" style="margin-top:0.8em;">
+          ¿Y si pudieras <strong>preguntarle a tu Slack</strong>?
+        </p>
+        <aside class="notes">
+          Conectar con el dolor de la audiencia. Todos lo viven. Cerrar con la pregunta-gancho
+          que abre los 3 pasos del próximo bloque.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/reveal.js"></script>
+  <script src="vendor/highlight.js"></script>
+  <script src="vendor/notes.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: "c/t",
+      transition: "slide",
+      backgroundTransition: "fade",
+      plugins: [RevealHighlight, RevealNotes],
+    });
+  </script>
+  <script src="js/vectorspace.js"></script>
+</body>
+</html>
