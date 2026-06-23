@@ -135,7 +135,46 @@
         </aside>
       </section>
 
-      <!-- 5 · HANDS-ON PASO 2: KNOWLEDGE BASE -->
+      <!-- 5 · HANDS-ON PASO 1: S3 VECTORS -->
+      <section data-background-color="#0a0e17">
+        <span class="step-badge">Hands-on · Paso 1</span>
+        <h2>La <strong>base vectorial</strong> (S3 Vectors)</h2>
+        <div class="handson">
+          <div class="explain">
+            <p>Primero, dónde van a vivir los <em>embeddings</em>. Creamos:</p>
+            <ul>
+              <li>un <b>vector bucket</b> → el almacén</li>
+              <li>un <b>índice</b> → la búsqueda por similitud</li>
+            </ul>
+            <p>Dos parámetros que importan:</p>
+            <ul>
+              <li><b>dimension 1024</b> → el tamaño del vector de Titan v2</li>
+              <li><b>cosine</b> → cómo se mide "parecido"</li>
+            </ul>
+            <p>Serverless: se paga por uso, sin infra.</p>
+          </div>
+          <div class="code">
+            <pre><code data-trim data-line-numbers="1-2|4-10" class="language-python">s3v.create_vector_bucket(
+    vectorBucketName="slackrag-vectors")
+
+s3v.create_index(
+    vectorBucketName="slackrag-vectors",
+    indexName="slackrag-index",
+    dataType="float32",
+    dimension=1024,          # = Titan v2
+    distanceMetric="cosine",
+)</code></pre>
+            <div class="run">python workshop/steps/step1_vectors.py</div>
+          </div>
+        </div>
+        <aside class="notes">
+          Analogía: una biblioteca vacía con las estanterías ya organizadas por tema (el espacio
+          vectorial). Todavía no hay libros. dimension 1024 DEBE coincidir con el modelo de embeddings.
+          Correr el step en vivo (idempotente).
+        </aside>
+      </section>
+
+      <!-- 6 · HANDS-ON PASO 2: KNOWLEDGE BASE -->
       <section data-background-color="#0a0e17">
         <span class="step-badge">Hands-on · Paso 2</span>
         <h2>Crear el <strong>Knowledge Base</strong></h2>
@@ -170,6 +209,38 @@
           Recorrer el código con los line-highlights: (1) nombre+role, (2) el modelo de embeddings,
           (3) storage = S3_VECTORS, el punto serverless. Después correr el step EN VIVO: es idempotente,
           si ya existe lo reusa. Mostrar el output con knowledgeBaseId.
+        </aside>
+      </section>
+
+      <!-- 7 · HANDS-ON PASO 3: INGESTAR Y PREGUNTAR (AHA) -->
+      <section data-background-color="#0a0e17">
+        <span class="step-badge">Hands-on · Paso 3</span>
+        <h2>Ingestar y <strong>preguntar</strong> 🪄</h2>
+        <div class="handson">
+          <div class="explain">
+            <p>Sin LLM todavía. Solo <em>retrieval</em>:</p>
+            <ul>
+              <li><b>ingestamos</b> unos mensajes → el KB los embebe</li>
+              <li><b>preguntamos</b> → trae los más parecidos, con cita</li>
+            </ul>
+            <p>El "aha": preguntás <b>"producción"</b> y encuentra el mensaje que dice <b>"prod"</b>.<br>
+            No es buscar palabras — es buscar <em>significado</em>.</p>
+          </div>
+          <div class="code">
+            <pre><code data-trim data-line-numbers class="language-python">resp = retrieve(kb_id,
+    "¿cuándo es el deploy de producción?")
+
+# → el KB devuelve los chunks más parecidos:
+#   [0.75]  ana: El deploy de prod quedó
+#           para el viernes 18hs.      C-DEMO-1.0
+#   [0.57]  beto: freeze de código...  C-DEMO-2.0</code></pre>
+            <div class="run">python workshop/steps/step3_query.py</div>
+          </div>
+        </div>
+        <aside class="notes">
+          Este es el momento clave de la charla. Recalcar: "producción" vs "prod" — similitud semántica,
+          no keyword match. Cada resultado trae su cita (de qué mensaje salió). Correr en vivo: filtra
+          por el canal de demo, así el resultado es limpio. Recién en el paso 4 sumamos el agente + Claude.
         </aside>
       </section>
 
