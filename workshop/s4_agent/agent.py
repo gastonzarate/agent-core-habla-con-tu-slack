@@ -18,9 +18,14 @@ KB_ID = os.environ["KB_ID"]
 DATA_SOURCE_ID = os.environ["DATA_SOURCE_ID"]
 MODEL_ID = os.environ.get("MODEL_ID", "us.anthropic.claude-sonnet-4-6")
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", "")
-# Guardrail OPCIONAL (paso 4.2): si está seteado, Bedrock filtra entrada/salida.
+# Guardrail OPCIONAL (paso 4.1): si está seteado, Bedrock filtra entrada/salida.
 GUARDRAIL_ID = os.environ.get("GUARDRAIL_ID", "")
 GUARDRAIL_VERSION = os.environ.get("GUARDRAIL_VERSION", "DRAFT")
+# Memory OPCIONAL (paso 4.1/5.1): si está seteado, el agente recuerda la
+# conversación por sesión (corto plazo). En el Runtime desplegado, el chat
+# server-side carga/guarda el historial acá adentro.
+MEMORY_ID = os.environ.get("MEMORY_ID", "")
+MEMORY_ACTOR = "slack-user"
 
 app = BedrockAgentCoreApp()
 _model_kwargs = dict(model_id=MODEL_ID, region_name=REGION, temperature=0.2)
@@ -30,6 +35,32 @@ if GUARDRAIL_ID:
     _model_kwargs.update(guardrail_id=GUARDRAIL_ID, guardrail_version=GUARDRAIL_VERSION,
                          guardrail_trace="enabled", guardrail_latest_message=True)
 _model = BedrockModel(**_model_kwargs)
+
+# Cliente de memoria (solo si MEMORY_ID está seteado)
+_mem = None
+if MEMORY_ID:
+    from bedrock_agentcore.memory import MemoryClient
+    _mem = MemoryClient(region_name=REGION)
+
+
+def _load_history(session_id, k=6):
+    """Últimos k turnos de la sesión como mensajes de conversación de Strands."""
+    turns = _mem.get_last_k_turns(memory_id=MEMORY_ID, actor_id=MEMORY_ACTOR,
+                                  session_id=session_id, k=k)
+    msgs = []
+    for turn in turns:
+        for m in turn:
+            text = (m.get("content") or {}).get("text", "").strip()
+            if not text:
+                continue
+            role = "user" if (m.get("role") or "").upper() == "USER" else "assistant"
+            msgs.append({"role": role, "content": [{"text": text}]})
+    return msgs
+
+
+def _save_turn(session_id, pregunta, answer):
+    _mem.create_event(memory_id=MEMORY_ID, actor_id=MEMORY_ACTOR, session_id=session_id,
+                      messages=[(pregunta, "USER"), (answer, "ASSISTANT")])
 
 
 @tool
@@ -76,9 +107,19 @@ def _extract_text(message):
 
 
 @app.entrypoint
-def invoke(payload):
-    result = _agent(payload.get("prompt", ""))
-    return {"result": _extract_text(result.message)}
+def invoke(payload, context=None):
+    prompt = payload.get("prompt", "")
+    # sesión: del payload o del contexto del runtime (runtimeSessionId)
+    session_id = payload.get("session_id") or getattr(context, "session_id", None)
+
+    if _mem and session_id:                       # 1) cargar historial (memoria)
+        _agent.messages = _load_history(session_id)
+
+    answer = _extract_text(_agent(prompt).message)  # 2) responder (con guardrail)
+
+    if _mem and session_id:                       # 3) guardar el turno
+        _save_turn(session_id, prompt, answer)
+    return {"result": answer}
 
 
 if __name__ == "__main__":

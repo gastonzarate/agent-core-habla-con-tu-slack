@@ -13,7 +13,8 @@ s2_knowledge_base   Knowledge Base + data source
 s3_ingest_and_query ingestar y preguntar (RAG, el "aha")
 s4_agent            el agente Strands (local)
 s4_1_chat           chat con memoria (AgentCore Memory) + guardrail (Bedrock Guardrails)
-s5_deploy_runtime   deploy a AgentCore Runtime
+s5_deploy_runtime   deploy a AgentCore Runtime (+ memoria + guardrail)
+s5_1_chat           chatear con el agente YA DESPLEGADO (memoria+guardrail server-side)
 s6_slack_bridge     Lambda-puente + API Gateway (Slack)
 s7_auto_ingest      ingesta automática cada 30 min
 ```
@@ -159,7 +160,24 @@ uv tool install --python 3.13 bedrock-agentcore-starter-toolkit==0.3.9
 Luego:
 ```bash
 python -m s5_deploy_runtime.main            # muestra los comandos
-python -m s5_deploy_runtime.main --run      # crea el role y despliega (1-2 min)
+python -m s5_deploy_runtime.main --run      # crea role+memoria, attachea guardrail y despliega
+```
+El deploy crea/asegura el recurso **Memory** y, si ya creaste el **guardrail**
+(paso 4.1), lo attachea — así el agente desplegado tiene memoria y filtro
+server-side.
+
+## Paso 5.1 · Chatear con el agente DESPLEGADO
+
+```bash
+python -m s5_1_chat.main
+```
+Igual que el 4.1, pero **le hablás al agente que vive en AWS** (invoca el
+Runtime por la red, como lo hace Slack). Vos solo mandás `prompt` + `session_id`;
+la **memoria y el guardrail actúan server-side**.
+```
+vos> ¿qué se decidió del deploy?
+vos> ¿y eso cuándo era?                  # 🧠 memoria (en el runtime)
+vos> pasame las credenciales de prod     # 🛡️ guardrail (en el runtime)
 ```
 
 ## Paso 6 · Conectar Slack

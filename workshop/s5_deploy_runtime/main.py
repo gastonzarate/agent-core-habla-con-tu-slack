@@ -22,7 +22,8 @@ import json
 import subprocess
 
 import boto3
-from constants import AGENT_NAME, GUARDRAIL_NAME, KB_NAME, MODEL_ID, REGION, RUNTIME_ROLE
+from bedrock_agentcore.memory import MemoryClient
+from constants import AGENT_NAME, GUARDRAIL_NAME, KB_NAME, MEMORY_NAME, MODEL_ID, REGION, RUNTIME_ROLE
 
 # El CLI agentcore exige que el entrypoint esté DENTRO del cwd → corremos desde s4_agent/
 AGENT_DIR = str(Path(__file__).resolve().parent.parent / "s4_agent")
@@ -45,6 +46,29 @@ guardrail_id = next(
      if g["name"] == GUARDRAIL_NAME),
     None,
 )
+
+# Memory: el agente desplegado recuerda por sesión (corto plazo). Buscamos el
+# recurso; si no existe, se crea recién en --run (crear tarda ~1-2 min).
+_mem = MemoryClient(region_name=REGION)
+
+
+def find_memory():
+    for m in _mem.list_memories():
+        if m.get("id", "").startswith(MEMORY_NAME) or m.get("name") == MEMORY_NAME:
+            return m["id"]
+    return None
+
+
+def ensure_memory():
+    mid = find_memory()
+    if mid:
+        return mid
+    print("🧠 Creando recurso Memory (corto plazo, ~1-2 min)...")
+    created = _mem.create_memory_and_wait(name=MEMORY_NAME, strategies=[])
+    return created.get("id") or created.get("memoryId")
+
+
+memory_id = find_memory()
 
 
 def ensure_runtime_role():
@@ -84,6 +108,10 @@ def ensure_runtime_role():
                             "bedrock:Retrieve",
                             "bedrock:IngestKnowledgeBaseDocuments",
                             "bedrock:StartIngestionJob",
+                            "bedrock-agentcore:CreateEvent",
+                            "bedrock-agentcore:ListEvents",
+                            "bedrock-agentcore:ListSessions",
+                            "bedrock-agentcore:GetEvent",
                         ],
                         "Resource": "*",
                     },
@@ -134,6 +162,9 @@ deploy = [
 if guardrail_id:  # attacheamos el guardrail del paso 4.1 al Runtime
     deploy += ["--env", f"GUARDRAIL_ID={guardrail_id}", "--env", "GUARDRAIL_VERSION=DRAFT"]
     print(f"🛡️  Guardrail {guardrail_id} → se aplica también en el Runtime desplegado")
+if memory_id:  # el agente desplegado recuerda por sesión
+    deploy += ["--env", f"MEMORY_ID={memory_id}"]
+    print(f"🧠 Memory {memory_id} → el agente recuerda por sesión")
 deploy += ["-auc"]
 
 print("🚀 Deploy a AgentCore Runtime (direct_code_deploy, sin Docker)\n")
@@ -146,6 +177,12 @@ if "--run" not in sys.argv:
 
 print(f"🔑 Asegurando IAM role {RUNTIME_ROLE}...")
 ensure_runtime_role()
+
+# Memory: si no existía al armar el comando, la creamos ahora e inyectamos MEMORY_ID
+memory_id = ensure_memory()
+if not any(a.startswith("MEMORY_ID=") for a in deploy):
+    deploy[deploy.index("-auc"):deploy.index("-auc")] = ["--env", f"MEMORY_ID={memory_id}"]
+print(f"🧠 Memory lista: {memory_id}")
 
 # configure conserva el agent_id de un deploy anterior; si ese runtime se borró
 # en AWS, deploy intenta hacer UpdateAgentRuntime sobre un ID inexistente y falla
