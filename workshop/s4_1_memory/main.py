@@ -20,6 +20,7 @@ Ejecutar (desde workshop/):   python -m s4_1_memory.main
 Salí con Ctrl-C o escribiendo 'salir'.
 """
 import os
+from contextlib import nullcontext
 
 import boto3
 from bedrock_agentcore.memory import MemoryClient
@@ -29,6 +30,54 @@ from constants import KB_NAME, MEMORY_NAME, MODEL_ID, REGION
 ACTOR_ID = "local-user"     # quién habla (un usuario, o el agente)
 SESSION_ID = "local-demo"   # UNA conversación; cambialo para arrancar otra
 K_TURNS = 6                 # cuántos turnos previos le damos de contexto
+
+# --- UI linda en terminal con rich (si no está, caemos a texto plano) ---
+try:
+    from rich.console import Console
+    from rich.markdown import Markdown
+    from rich.panel import Panel
+    console = Console()
+    _RICH = True
+except ImportError:         # pip install rich
+    console = None
+    _RICH = False
+
+
+def info(text, style="cyan"):
+    console.print(text, style=style) if _RICH else print(text)
+
+
+def banner(memory_id):
+    if _RICH:
+        console.print(Panel.fit(
+            "[bold]💬  Chat con memoria[/]  ·  AgentCore Memory (corto plazo)",
+            border_style="cyan", subtitle=f"sesión: {SESSION_ID}"))
+        console.print(
+            "[dim]Probá:[/] 1) ¿qué se decidió del deploy?   "
+            "2) ¿y eso cuándo era?   ([bold]salir[/] para terminar)\n")
+    else:
+        print(f"\n💬 Chat con memoria · sesión '{SESSION_ID}' (memory_id={memory_id})")
+        print("   Probá: 1) '¿qué se decidió del deploy?'  2) '¿y eso cuándo era?'")
+        print("   Escribí 'salir' para terminar.\n")
+
+
+def ask():
+    raw = console.input("[bold cyan]vos[/] ❯ ") if _RICH else input("vos> ")
+    return raw.strip()
+
+
+def thinking():
+    return console.status("[dim]🤔 el agente piensa…[/]", spinner="dots") if _RICH else nullcontext()
+
+
+def show_answer(text):
+    if _RICH:
+        console.print(Panel(Markdown(text), title="🤖 agente",
+                            title_align="left", border_style="green"))
+        console.print()
+    else:
+        print(f"bot> {text}\n")
+
 
 # --- KB_ID / DATA_SOURCE_ID por nombre (igual que el paso 4) ---
 ba = boto3.client("bedrock-agent", region_name=REGION)
@@ -55,7 +104,7 @@ def get_or_create_memory():
     for m in mem.list_memories():
         if m.get("id", "").startswith(MEMORY_NAME) or m.get("name") == MEMORY_NAME:
             return m["id"]
-    print(f"🧠 Creando recurso de memoria '{MEMORY_NAME}' (corto plazo, ~1-2 min)...")
+    info(f"🧠 Creando recurso de memoria '{MEMORY_NAME}' (corto plazo, ~1-2 min)...", "yellow")
     created = mem.create_memory_and_wait(name=MEMORY_NAME, strategies=[])
     return created.get("id") or created.get("memoryId")
 
@@ -77,13 +126,11 @@ def load_history(memory_id):
 
 
 memory_id = get_or_create_memory()
-print(f"\n💬 Chat con memoria · sesión '{SESSION_ID}' (memory_id={memory_id})")
-print("   Probá: 1) '¿qué se decidió del deploy?'  2) '¿y eso cuándo era?'")
-print("   Escribí 'salir' para terminar.\n")
+banner(memory_id)
 
 while True:
     try:
-        pregunta = input("vos> ").strip()
+        pregunta = ask()
     except (EOFError, KeyboardInterrupt):
         print()
         break
@@ -101,8 +148,9 @@ while True:
     else:
         prompt = pregunta
 
-    answer = _extract_text(_agent(prompt).message)   # 3) responder
-    print(f"bot> {answer}\n")
+    with thinking():                           # 3) responder (con spinner)
+        answer = _extract_text(_agent(prompt).message)
+    show_answer(answer)
 
     mem.create_event(                          # 4) guardar el turno (texto crudo)
         memory_id=memory_id,
@@ -111,4 +159,4 @@ while True:
         messages=[(pregunta, "USER"), (answer, "ASSISTANT")],
     )
 
-print("✅ Listo. El historial quedó en AgentCore Memory (se borra con el paso 0).")
+info("✅ Listo. El historial quedó en AgentCore Memory (se borra con el paso 0).", "green")

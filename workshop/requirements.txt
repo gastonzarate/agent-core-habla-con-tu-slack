@@ -4,6 +4,7 @@ boto3==1.43.36
 bedrock-agentcore==1.15.0
 strands-agents==1.44.0
 slack_sdk==3.42.0
+rich==15.0.0          # render lindo en terminal (paso 4.1: chat con markdown)
 
 # Nota: el CLI de deploy (paso 5) se instala APARTE, con Python 3.13
 # (crashea en 3.14), por eso no va acá:
