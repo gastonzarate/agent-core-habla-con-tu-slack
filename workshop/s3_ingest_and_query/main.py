@@ -28,11 +28,27 @@ TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 PREGUNTA = sys.argv[1] if len(sys.argv) > 1 else "¿qué se decidió hoy?"
 
 DEMO = [
+    # Deploys / releases
     {"id": "demo-0", "text": "ana: El deploy de prod quedó para el viernes 18hs."},
-    {"id": "demo-1", "text": "beto: Confirmado, freeze de código el jueves."},
-    {"id": "demo-2", "text": "ana: El bug de login se arregló en el PR #482."},
-    {"id": "demo-3", "text": "caro: Decidimos migrar la base de datos a Aurora Serverless v2."},
-    {"id": "demo-4", "text": "beto: El cliente Acme pidió SSO con Okta."},
+    {"id": "demo-1", "text": "beto: Confirmado, freeze de código el jueves a las 12."},
+    {"id": "demo-2", "text": "tomi: La release 2.4 incluye el nuevo onboarding y el rate limiting."},
+    {"id": "demo-3", "text": "ana: Rollback listo por las dudas; si algo explota volvemos a la 2.3."},
+    # Bugs / staging
+    {"id": "demo-4", "text": "ana: El bug de login se arregló en el PR #482."},
+    {"id": "demo-5", "text": "teo: En staging el checkout tira 500 cuando el carrito está vacío."},
+    {"id": "demo-6", "text": "teo: Era un null en el cálculo de envío, ya lo parchamos."},
+    {"id": "demo-7", "text": "beto: Subió la latencia del search a 1.2s, lo estamos mirando."},
+    # Clientes
+    {"id": "demo-8", "text": "beto: El cliente Acme pidió SSO con Okta para fin de mes."},
+    {"id": "demo-9", "text": "juli: Globex renovó el contrato por 12 meses más."},
+    {"id": "demo-10", "text": "juli: Wiix arranca el lunes 10 con 20 hs mensuales, contrato a 3 meses."},
+    # Decisiones técnicas
+    {"id": "demo-11", "text": "caro: Decidimos migrar la base de datos a Aurora Serverless v2."},
+    {"id": "demo-12", "text": "caro: Vamos con Bedrock AgentCore para el bot, todo serverless."},
+    {"id": "demo-13", "text": "tomi: Acordamos pasar los workers a colas SQS en vez de cron."},
+    # RRHH / equipo
+    {"id": "demo-14", "text": "fer: Arranca Gasti el lunes, hay que prepararle los accesos."},
+    {"id": "demo-15", "text": "fer: La daily se mueve a las 10:15 a partir de mañana."},
 ]
 
 
