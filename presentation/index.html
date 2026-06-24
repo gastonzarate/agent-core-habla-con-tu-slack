@@ -302,35 +302,27 @@ s3v.create_index(
       <!-- · ANATOMÍA DE UN PROMPT -->
       <section data-background-color="#0a0e17">
         <span class="kicker">Cómo funciona · el prompt</span>
-        <h2>Anatomía de un <strong>prompt</strong></h2>
-        <div class="promptbox">
-          <div class="pb-row r">
-            <span class="who">Usuario · lo único que escribe</span>
-            <span class="bub user">@slack-rag ¿qué se decidió sobre el deploy?</span>
-          </div>
-          <div class="sys">
-            <div class="sys-cap">🙈 Lo que el usuario NO ve — lo arma el agente por detrás:</div>
-            <div class="sys-row fragment"><span class="txt">"Sos el asistente del equipo, respondés sobre el Slack…"</span><span class="tag t-rol">Rol</span></div>
-            <div class="sys-row fragment"><span class="txt">"En español, breve. Siempre citá las fuentes. No inventes."</span><span class="tag t-ins">Instrucciones</span></div>
-            <div class="sys-row fragment"><span class="txt">Herramientas: <code>ask_kb(pregunta)</code>, <code>ingest_slack(canal)</code></span><span class="tag t-tool">Tools ✦</span></div>
-            <div class="sys-row fragment"><span class="txt">[recuperado del KB] "ana: el deploy quedó para el viernes 18hs…"</span><span class="tag t-ctx">Contexto · RAG ✦</span></div>
-            <div class="sys-row fragment"><span class="txt">Devolvé respuesta + fuentes. Si no está en el contexto, decí que no sabés.</span><span class="tag t-fmt">Formato ✦</span></div>
-          </div>
-          <div class="pb-row">
-            <span class="bub bot">El deploy quedó para el <b>viernes 18hs</b>. 📎 <code>C‑DEMO‑1.0</code></span>
-            <span class="who">Agente</span>
-          </div>
+        <h2>Las partes de un <strong>buen prompt</strong></h2>
+        <div class="prompt-grid">
+          <div class="pcard c-rol"><div class="h">🎭 Rol</div><div class="ex">"Sos el asistente del equipo."</div></div>
+          <div class="pcard c-obj"><div class="h">🎯 Objetivo</div><div class="ex">Qué tiene que lograr, con qué criterio.</div></div>
+          <div class="pcard c-ins"><div class="h">📋 Instrucciones</div><div class="ex">En español, breve, paso a paso.</div></div>
+          <div class="pcard c-ctx"><div class="h">📚 Contexto · RAG <span class="new">✦</span></div><div class="ex">Los chunks recuperados del KB.</div></div>
+          <div class="pcard c-tool"><div class="h">🔧 Herramientas <span class="new">✦</span></div><div class="ex"><code>ask_kb(pregunta)</code>…</div></div>
+          <div class="pcard c-ex"><div class="h">💡 Ejemplos</div><div class="ex">Few-shot: muestra de pregunta → respuesta.</div></div>
+          <div class="pcard c-fmt"><div class="h">🧱 Formato de salida</div><div class="ex">Respuesta + 📎 fuentes.</div></div>
+          <div class="pcard c-grd"><div class="h">🛡️ Guardrails</div><div class="ex">Si no está en el contexto, decilo. No inventes.</div></div>
         </div>
-        <p class="muted center" style="font-size:0.56em; margin-top:0.6em;">
-          El usuario solo escribe la pregunta. Todo lo demás se arma por detrás.
-          <strong>✦ = lo que suma un agente moderno</strong> (tools, contexto recuperado, formato).
+        <p class="muted center" style="font-size:0.54em; margin-top:0.7em;">
+          💬 El usuario solo escribe su <strong>consulta</strong> — todo lo de arriba lo arma el agente.
+          <strong class="new" style="color:var(--accent)">✦ = lo que suma un agente</strong> (contexto recuperado + herramientas).
         </p>
         <aside class="notes">
-          La pregunta del usuario es la punta del iceberg. Por detrás el agente arma un prompt con
-          partes: ROL (quién es), INSTRUCCIONES (cómo responder), y —lo nuevo de los agentes— las TOOLS
-          que puede usar, el CONTEXTO recuperado del RAG (los chunks del KB) y el FORMATO/guardrails
-          (citar fuentes, no inventar). El modelo ve TODO esto; el usuario solo su pregunta. Revelá
-          parte por parte. Esto explica por qué en el código (próxima slide) hay system_prompt + tools.
+          La pregunta del usuario es la punta del iceberg. Un buen prompt tiene varias partes:
+          Rol (quién es), Objetivo (qué lograr), Instrucciones (cómo), Ejemplos (few-shot), Formato
+          de salida y Guardrails (no inventes, citá). Y lo que suma un AGENTE: el Contexto recuperado
+          por RAG (los chunks del KB) y las Herramientas que puede usar. El modelo ve todo esto; el
+          usuario solo su consulta. Esto explica el system_prompt + tools del código (próxima slide).
         </aside>
       </section>
 
