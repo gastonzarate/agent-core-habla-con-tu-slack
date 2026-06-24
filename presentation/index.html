@@ -302,27 +302,29 @@ s3v.create_index(
       <!-- · ANATOMÍA DE UN PROMPT -->
       <section data-background-color="#0a0e17">
         <span class="kicker">Cómo funciona · el prompt</span>
-        <h2>Las partes de un <strong>buen prompt</strong></h2>
-        <div class="prompt-grid">
-          <div class="pcard c-rol"><div class="h">🎭 Rol</div><div class="ex">"Sos el asistente del equipo."</div></div>
-          <div class="pcard c-obj"><div class="h">🎯 Objetivo</div><div class="ex">Qué tiene que lograr, con qué criterio.</div></div>
-          <div class="pcard c-ins"><div class="h">📋 Instrucciones</div><div class="ex">En español, breve, paso a paso.</div></div>
-          <div class="pcard c-ctx"><div class="h">📚 Contexto · RAG <span class="new">✦</span></div><div class="ex">Los chunks recuperados del KB.</div></div>
-          <div class="pcard c-tool"><div class="h">🔧 Herramientas <span class="new">✦</span></div><div class="ex"><code>ask_kb(pregunta)</code>…</div></div>
-          <div class="pcard c-ex"><div class="h">💡 Ejemplos</div><div class="ex">Few-shot: muestra de pregunta → respuesta.</div></div>
-          <div class="pcard c-fmt"><div class="h">🧱 Formato de salida</div><div class="ex">Respuesta + 📎 fuentes.</div></div>
-          <div class="pcard c-grd"><div class="h">🛡️ Guardrails</div><div class="ex">Si no está en el contexto, decilo. No inventes.</div></div>
+        <h2>Un <strong>buen prompt</strong>, por dentro</h2>
+        <div class="prompt-doc">
+          <div class="pd-head">🧠 esto es lo que recibe el modelo</div>
+          <div class="pseg s-rol"><span class="lbl">🎭 Rol</span><span class="body">Sos «slack-rag», el asistente del equipo. Respondés sobre lo que se conversó en Slack.</span></div>
+          <div class="pseg s-obj"><span class="lbl">🎯 Objetivo</span><span class="body">Contestar la consulta de forma precisa y accionable.</span></div>
+          <div class="pseg s-ins"><span class="lbl">📋 Instrucciones</span><span class="body">Respondé en español, claro y breve. Usá solo el contexto.</span></div>
+          <div class="pseg s-tool"><span class="lbl">🔧 Herramientas <span class="new">✦</span></span><span class="body">ask_kb(pregunta) → busca en el Knowledge Base.</span></div>
+          <div class="pseg s-ctx"><span class="lbl">📚 Contexto·RAG <span class="new">✦</span></span><span class="body">&lt;context&gt; ana: el deploy de prod quedó para el viernes 18hs · beto: freeze de código el jueves &lt;/context&gt;</span></div>
+          <div class="pseg s-ex"><span class="lbl">💡 Ejemplos</span><span class="body">P: «¿cuándo es el deploy?» → R: «Viernes 18hs 📎[1]»</span></div>
+          <div class="pseg s-fmt"><span class="lbl">🧱 Formato</span><span class="body">2-3 líneas + «📎 Fuentes: &lt;ids&gt;».</span></div>
+          <div class="pseg s-grd"><span class="lbl">🛡️ Guardrails</span><span class="body">Si no está en el contexto, decí que no lo encontraste. No inventes.</span></div>
+          <div class="pseg s-usr"><span class="lbl">💬 Usuario</span><span class="body">¿qué se decidió sobre el deploy de prod?</span></div>
         </div>
-        <p class="muted center" style="font-size:0.54em; margin-top:0.7em;">
-          💬 El usuario solo escribe su <strong>consulta</strong> — todo lo de arriba lo arma el agente.
-          <strong class="new" style="color:var(--accent)">✦ = lo que suma un agente</strong> (contexto recuperado + herramientas).
+        <p class="muted center" style="font-size:0.5em; margin-top:0.5em;">
+          El usuario solo escribe la <strong>última línea</strong>. Todo el resto lo arma el agente.
+          <strong style="color:var(--accent)">✦ = lo que suma un agente</strong> (contexto recuperado + herramientas).
         </p>
         <aside class="notes">
-          La pregunta del usuario es la punta del iceberg. Un buen prompt tiene varias partes:
-          Rol (quién es), Objetivo (qué lograr), Instrucciones (cómo), Ejemplos (few-shot), Formato
-          de salida y Guardrails (no inventes, citá). Y lo que suma un AGENTE: el Contexto recuperado
-          por RAG (los chunks del KB) y las Herramientas que puede usar. El modelo ve todo esto; el
-          usuario solo su consulta. Esto explica el system_prompt + tools del código (próxima slide).
+          Mostrá que el prompt real es esto: un bloque con partes. Recorré de arriba a abajo — Rol,
+          Objetivo, Instrucciones, y lo nuevo de los agentes (Herramientas y Contexto recuperado por
+          RAG), Ejemplos (few-shot), Formato y Guardrails. Lo último, el Usuario, es lo ÚNICO que la
+          persona escribe. Todo lo de arriba lo arma el agente por detrás. Esto es literalmente el
+          system_prompt + tools + contexto que vemos en el código.
         </aside>
       </section>
 
