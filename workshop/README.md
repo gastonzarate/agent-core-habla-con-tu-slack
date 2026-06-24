@@ -56,6 +56,22 @@ aws sts get-caller-identity       # debe mostrar la cuenta de prueba
 **Modelos en Bedrock**: la cuenta de prueba ya viene con **Titan Text
 Embeddings v2** y **Claude Sonnet 4.6** habilitados en `us-east-1`.
 
+### Secretos de Slack (`.env`)
+
+Los pasos que tocan Slack (**3** y **6**) leen los secretos de variables de
+entorno. Para no exportarlos a mano, copiá el ejemplo, completalo **una vez** y
+cargalo en la terminal:
+
+```bash
+cp .env.example .env            # editá .env con los datos de tu Slack App
+set -a; source .env; set +a     # cargá las variables (antes de los pasos 3 y 6)
+```
+
+`.env` tiene `SLACK_SIGNING_SECRET`, `SLACK_BOT_TOKEN` y `SLACK_BOT_USER_ID`
+(de dónde sacar cada uno está comentado en `.env.example`). Si **cambiás de
+Slack App**, editás `.env` y volvés a correr `set -a; source .env; set +a`.
+El `.env` está gitignored — no se sube.
+
 > **Todos los pasos se corren desde `workshop/`** con `python -m <carpeta>.main`
 > (así encuentran `constants.py`). No hace falta `cd` a cada carpeta.
 
@@ -85,8 +101,11 @@ Crea el IAM role, el Knowledge Base sobre S3 Vectors y una data source CUSTOM.
 
 ```bash
 python -m s3_ingest_and_query.main
+python -m s3_ingest_and_query.main "¿qué pasó con el deploy?"   # con tu pregunta
 ```
-Ingesta unos mensajes y pregunta: el retrieval encuentra el correcto, con cita.
+Con el `.env` cargado (con `SLACK_BOT_TOKEN`), ingesta el **último día real de
+Slack** y pregunta. Sin token, usa mensajes de ejemplo. El retrieval encuentra
+el correcto por significado, con su cita.
 
 ## Paso 4 · El agente (local)
 
@@ -113,11 +132,8 @@ python -m s5_deploy_runtime.main --run      # crea el role y despliega (1-2 min)
 
 ## Paso 6 · Conectar Slack
 
-Necesitás los secretos de tu Slack App (Signing Secret y Bot Token):
+Con el `.env` cargado (los 3 secretos de Slack — ver setup), corré:
 ```bash
-export SLACK_SIGNING_SECRET=...        # Basic Information → App Credentials
-export SLACK_BOT_TOKEN=xoxb-...        # OAuth & Permissions (tras instalar)
-export SLACK_BOT_USER_ID=U...          # auth.test, o el user id del bot
 python -m s6_slack_bridge.main
 ```
 Imprime la **Request URL**. Pegala en la Slack App (Event Subscriptions +

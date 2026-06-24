@@ -7,3 +7,5 @@ __pycache__/
 .bedrock_agentcore/
 .pytest_cache/
 .venv-tools/
+.env
+workshop/.env
