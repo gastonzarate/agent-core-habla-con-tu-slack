@@ -164,7 +164,7 @@ s3v.create_index(
     dimension=1024,          # = Titan v2
     distanceMetric="cosine",
 )</code></pre>
-            <div class="run">python workshop/steps/step1_vectors.py</div>
+            <div class="run">python -m s1_vector_bucket.main</div>
           </div>
         </div>
         <aside class="notes">
@@ -239,7 +239,7 @@ s3v.create_index(
       "s3VectorsConfiguration": {
         "vectorBucketArn": bucket, "indexArn": index}},
 )</code></pre>
-            <div class="run">python workshop/steps/step2_kb.py</div>
+            <div class="run">python -m s2_knowledge_base.main</div>
           </div>
         </div>
         <aside class="notes">
@@ -289,7 +289,7 @@ s3v.create_index(
 #   [0.75]  ana: El deploy de prod quedó
 #           para el viernes 18hs.      C-DEMO-1.0
 #   [0.57]  beto: freeze de código...  C-DEMO-2.0</code></pre>
-            <div class="run">python workshop/steps/step3_query.py</div>
+            <div class="run">python -m s3_ingest_and_query.main</div>
           </div>
         </div>
         <aside class="notes">
@@ -558,7 +558,7 @@ agent = Agent(
 )
 
 agent("¿cuándo es el deploy de prod?")</code></pre>
-            <div class="run">python workshop/steps/step4_agent.py</div>
+            <div class="run">python -m s4_agent.main</div>
           </div>
         </div>
         <aside class="notes">
@@ -611,7 +611,7 @@ agentcore configure \
 agentcore deploy \
     --env KB_ID=$KB_ID \
     --env MODEL_ID=claude-sonnet-4-6</code></pre>
-            <div class="run">python workshop/steps/step5_deploy.py --run</div>
+            <div class="run">python -m s5_deploy_runtime.main --run</div>
           </div>
         </div>
         <aside class="notes">
