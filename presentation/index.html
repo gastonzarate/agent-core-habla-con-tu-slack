@@ -321,6 +321,24 @@ agent("¿cuándo es el deploy de prod?")</code></pre>
         </aside>
       </section>
 
+      <!-- · CÓMO RAZONA EL AGENTE (3D) -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Cómo razona · el agente</span>
+        <h2>El agente <strong>decide</strong> y orquesta</h2>
+        <div class="viz" id="agent3d"></div>
+        <p class="muted center" style="font-size:0.6em; margin-top:0.3em;">
+          Recibe la pregunta → <strong>decide</strong> usar <em>ask_kb</em> → busca en el
+          Knowledge Base → le pasa el contexto a <em>Claude</em> → arma la respuesta con citas.
+        </p>
+        <aside class="notes">
+          Seguí la señal: entra la pregunta al Agente; el agente DECIDE llamar a la tool ask_kb;
+          esa tool va al Knowledge Base y trae los vecinos más cercanos (la señal se vuelve teal =
+          el contexto recuperado); vuelve al agente, que se lo pasa a Claude; y Claude redacta la
+          respuesta final con las citas. El punto: el agente no sigue un script fijo — DECIDE qué
+          herramienta usar. Hoy es ask_kb; mañana podrían ser varias (buscar en Jira, postear, etc.).
+        </aside>
+      </section>
+
       <!-- 9 · HANDS-ON PASO 5: DEPLOY A AGENTCORE RUNTIME -->
       <section data-background-color="#0a0e17">
         <span class="step-badge">Hands-on · Paso 5</span>
@@ -533,5 +551,6 @@ events.put_targets(Rule="slackrag-ingest-30min",
   <script src="js/vectorspace.js"></script>
   <script src="js/vectordb.js"></script>
   <script src="js/kbpipeline.js"></script>
+  <script src="js/agent3d.js"></script>
 </body>
 </html>
