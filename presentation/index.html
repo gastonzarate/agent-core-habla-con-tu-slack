@@ -192,6 +192,25 @@ s3v.create_index(
         </aside>
       </section>
 
+      <!-- · CALIDAD DE DATOS: CRUDO VS PREPROCESADO -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Calidad de datos · garbage in, garbage out</span>
+        <h2>Cómo embebés <strong>importa</strong></h2>
+        <div class="viz" id="dq3d"></div>
+        <p class="muted center" style="font-size:0.62em; margin-top:0.3em;">
+          Los mismos mensajes, crudos vs <strong>preprocesados</strong> (limpiar + resumir antes de
+          embeber). Mirá cómo la pregunta pasa de traer ruido a caer en su grupo.
+        </p>
+        <aside class="notes">
+          Punto clave que casi nadie cuenta: la calidad del RAG depende de QUÉ embebés. Si metés los
+          mensajes crudos —joins, emojis, hilos mezclados, links— los vectores quedan dispersos y la
+          búsqueda trae ruido (panel izquierdo). Lo correcto es preprocesar: limpiar y resumir cada
+          mensaje/hilo, y embeber ESE resumen (panel derecho) → clusters limpios, retrieval preciso.
+          En el demo de hoy lo mantuvimos simple (embebemos el texto), pero en producción este paso
+          de preprocesamiento es el que más mueve la aguja en calidad. Es una de las "variantes".
+        </aside>
+      </section>
+
       <!-- 7 · HANDS-ON PASO 2: KNOWLEDGE BASE -->
       <section data-background-color="#0a0e17">
         <span class="step-badge">Hands-on · Paso 2</span>
@@ -567,5 +586,6 @@ events.put_targets(Rule="slackrag-ingest-30min",
   <script src="js/vectordb.js"></script>
   <script src="js/kbpipeline.js"></script>
   <script src="js/agent3d.js"></script>
+  <script src="js/dataquality.js"></script>
 </body>
 </html>

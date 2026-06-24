@@ -167,6 +167,13 @@ html, body { background: var(--bg); }
   padding: 3px 10px; font-size: 13px;
 }
 
+/* Calidad de datos: etiqueta de estado sobre la escena 3D */
+.dq-state {
+  position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+  font-weight: 800; font-size: 17px; letter-spacing: 0.02em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); pointer-events: none;
+}
+
 .big { font-size: 1.5em; line-height: 1.2; }
 .dim { opacity: 0.45; }
 .reveal ul { margin-left: 1em; }
