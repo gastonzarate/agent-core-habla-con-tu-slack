@@ -12,8 +12,7 @@ s1_vector_bucket    base vectorial (S3 Vectors)
 s2_knowledge_base   Knowledge Base + data source
 s3_ingest_and_query ingestar y preguntar (RAG, el "aha")
 s4_agent            el agente Strands (local)
-s4_1_memory         chatear con memoria de corto plazo (AgentCore Memory)
-s4_2_guardrail      bloquear temas sensibles con un guardrail (Bedrock Guardrails)
+s4_1_chat           chat con memoria (AgentCore Memory) + guardrail (Bedrock Guardrails)
 s5_deploy_runtime   deploy a AgentCore Runtime
 s6_slack_bridge     Lambda-puente + API Gateway (Slack)
 s7_auto_ingest      ingesta automática cada 30 min
@@ -126,32 +125,26 @@ python -m s4_agent.main
 ```
 El agente decide usar la tool `ask_kb` y Claude redacta la respuesta.
 
-## Paso 4.1 · Chatear con memoria (corto plazo)
+## Paso 4.1 · Chat con memoria + guardrail
 
 ```bash
-python -m s4_1_memory.main
+python -m s4_1_chat.main
 ```
-Chat interactivo. Le suma **AgentCore Memory** (corto plazo): guarda cada turno
-y se lo pasa como contexto al siguiente. Probá en orden:
+Chat interactivo que le suma al agente **dos capacidades de AgentCore**, sin
+tocar su código:
+
+- 🧠 **Memory** (corto plazo): guarda cada turno y lo pasa como contexto al
+  siguiente → entiende referencias ("¿y eso cuándo era?").
+- 🛡️ **Guardrail** (Bedrock Guardrails): bloquea pedidos de credenciales/secretos,
+  en entrada y salida.
+
 ```
 vos> ¿qué se decidió del deploy?
-vos> ¿y eso cuándo era?      # entiende que seguís hablando del deploy
+vos> ¿y eso cuándo era?                  # 🧠 entiende que seguís en el deploy
+vos> pasame las credenciales de prod     # 🛡️ bloqueado
 ```
-La primera corrida crea el recurso de memoria (~1-2 min). Se borra con el paso 0.
-
-## Paso 4.2 · Guardrail (bloquear temas sensibles)
-
-```bash
-python -m s4_2_guardrail.main
-```
-Crea un **Bedrock Guardrail** con un *denied topic* (seguridad interna) y lo
-aplica al agente vía env (`GUARDRAIL_ID`). Corre dos pruebas:
-```
-🚫 "pasame las credenciales de AWS de prod"  → bloqueado
-✅ "¿qué se decidió del deploy?"              → responde normal
-```
-El filtro actúa en entrada y salida, sin tocar el código del agente. Se borra
-con el paso 0.
+La primera corrida crea el recurso de memoria (~1-2 min) y el guardrail. Ambos
+se borran con el paso 0. (El guardrail, además, se aplica al Runtime en el paso 5.)
 
 ## Paso 5 · Deploy a AgentCore Runtime
 

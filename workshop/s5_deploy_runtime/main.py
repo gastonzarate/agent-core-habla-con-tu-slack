@@ -22,7 +22,7 @@ import json
 import subprocess
 
 import boto3
-from constants import AGENT_NAME, KB_NAME, MODEL_ID, REGION, RUNTIME_ROLE
+from constants import AGENT_NAME, GUARDRAIL_NAME, KB_NAME, MODEL_ID, REGION, RUNTIME_ROLE
 
 # El CLI agentcore exige que el entrypoint esté DENTRO del cwd → corremos desde s4_agent/
 AGENT_DIR = str(Path(__file__).resolve().parent.parent / "s4_agent")
@@ -37,6 +37,14 @@ kb_id = next(
 )
 ds_id = ba.list_data_sources(knowledgeBaseId=kb_id)["dataSourceSummaries"][0]["dataSourceId"]
 role_arn = f"arn:aws:iam::{acct}:role/{RUNTIME_ROLE}"
+
+# Si el paso 4.1 creó el guardrail, lo attacheamos al Runtime (el agente lo
+# lee de GUARDRAIL_ID). Si no existe, deployamos sin filtro.
+guardrail_id = next(
+    (g["id"] for g in boto3.client("bedrock", region_name=REGION).list_guardrails()["guardrails"]
+     if g["name"] == GUARDRAIL_NAME),
+    None,
+)
 
 
 def ensure_runtime_role():
@@ -72,6 +80,7 @@ def ensure_runtime_role():
                         "Action": [
                             "bedrock:InvokeModel",
                             "bedrock:InvokeModelWithResponseStream",
+                            "bedrock:ApplyGuardrail",
                             "bedrock:Retrieve",
                             "bedrock:IngestKnowledgeBaseDocuments",
                             "bedrock:StartIngestionJob",
@@ -121,8 +130,11 @@ deploy = [
     f"DATA_SOURCE_ID={ds_id}",
     "--env",
     f"MODEL_ID={MODEL_ID}",
-    "-auc",
 ]
+if guardrail_id:  # attacheamos el guardrail del paso 4.1 al Runtime
+    deploy += ["--env", f"GUARDRAIL_ID={guardrail_id}", "--env", "GUARDRAIL_VERSION=DRAFT"]
+    print(f"🛡️  Guardrail {guardrail_id} → se aplica también en el Runtime desplegado")
+deploy += ["-auc"]
 
 print("🚀 Deploy a AgentCore Runtime (direct_code_deploy, sin Docker)\n")
 print("1) configurar:\n   " + " ".join(configure) + "\n")

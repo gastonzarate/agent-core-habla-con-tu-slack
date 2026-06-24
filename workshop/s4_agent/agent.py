@@ -25,8 +25,10 @@ GUARDRAIL_VERSION = os.environ.get("GUARDRAIL_VERSION", "DRAFT")
 app = BedrockAgentCoreApp()
 _model_kwargs = dict(model_id=MODEL_ID, region_name=REGION, temperature=0.2)
 if GUARDRAIL_ID:
+    # guardrail_latest_message: el filtro evalúa SOLO el último mensaje del
+    # usuario (no toda la conversación), así no se diluye con el historial.
     _model_kwargs.update(guardrail_id=GUARDRAIL_ID, guardrail_version=GUARDRAIL_VERSION,
-                         guardrail_trace="enabled")
+                         guardrail_trace="enabled", guardrail_latest_message=True)
 _model = BedrockModel(**_model_kwargs)
 
 

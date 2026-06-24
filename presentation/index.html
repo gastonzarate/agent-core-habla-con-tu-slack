@@ -381,10 +381,11 @@ s3v.create_index(
             <span class="t">Runtime</span>
             <span class="s">Hosting serverless, sesión aislada por usuario. El paso 5.</span>
           </div>
-          <div class="ac-card fragment">
+          <div class="ac-card have fragment">
+            <span class="tag">LO SUMAMOS</span>
             <span class="ic">🧠</span>
             <span class="t">Memory</span>
-            <span class="s">Memoria de corto y largo plazo entre conversaciones.</span>
+            <span class="s">Memoria de corto y largo plazo entre conversaciones. El paso 4.1.</span>
           </div>
           <div class="ac-card fragment">
             <span class="ic">🔌</span>
@@ -411,19 +412,78 @@ s3v.create_index(
             <span class="t">Browser</span>
             <span class="s">Navegación web headless y segura para tareas en la web.</span>
           </div>
-          <div class="ac-card fragment">
+          <div class="ac-card have fragment">
+            <span class="tag">LO SUMAMOS</span>
             <span class="ic">🛡️</span>
-            <span class="t">Policy &amp; Guardrails</span>
-            <span class="s">Reglas y límites sobre qué puede y no puede hacer el agente.</span>
+            <span class="t">Guardrails</span>
+            <span class="s">Filtra temas y datos sensibles, en entrada y salida. El paso 4.1.</span>
           </div>
         </div>
         <aside class="notes">
-          Nuestro agente de hoy usa solo el Runtime (paso 5). Pero AgentCore es modular: cada bloque
-          se enchufa sin reescribir el agente. ¿Quieren que recuerde conversaciones? Memory. ¿Conectar
-          a la API interna del cliente como tools? Gateway. ¿Que actúe en nombre del usuario con sus
-          permisos? Identity. Trazabilidad y debugging? Observability. Y si necesita ejecutar código o
-          navegar la web, hay sandbox para eso. Mensaje: empezás mínimo y escalás capacidades — esto es
-          exactamente el tipo de arquitectura que armamos en Craftech.
+          Hoy vamos a usar TRES bloques (los marcados): Runtime para hostear el agente, Memory para
+          que recuerde la conversación, y Guardrails para filtrar datos sensibles. Y AgentCore tiene
+          más, todos modulares, que se enchufan sin reescribir el agente: ¿conectar la API interna del
+          cliente como tools? Gateway. ¿Que actúe en nombre del usuario con sus permisos? Identity.
+          ¿Trazas y debugging? Observability. ¿Ejecutar código o navegar la web? Code Interpreter y
+          Browser. Mensaje: empezás mínimo y escalás capacidades — justo el tipo de arquitectura que
+          armamos en Craftech.
+        </aside>
+      </section>
+
+      <!-- · MEMORY + GUARDRAILS EN DETALLE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Lo que le sumamos hoy · en detalle</span>
+        <h2>🧠 Memory  &  🛡️ Guardrails</h2>
+        <div class="cards" style="font-size:0.82em;">
+
+          <div class="card fragment" style="border-color:var(--accent);">
+            <div class="n">🧠 MEMORY · corto plazo</div>
+            <h3>Que recuerde la conversación</h3>
+            <p style="color:#cdd6e6; margin:0.2em 0 0.5em;">
+              El historial crudo de la charla, guardado por <b>sesión</b>. Cada turno se
+              persiste y se reinyecta como contexto en el siguiente.
+            </p>
+            <div class="mem-loop">
+              <span>cargar últimos turnos</span><span class="ar">→</span>
+              <span>responder</span><span class="ar">→</span>
+              <span>guardar turno</span>
+            </div>
+            <p class="muted" style="font-size:0.82em; margin-top:0.5em;">
+              Por eso entiende <em>"¿y <b>eso</b> cuándo era?"</em>. Hay también
+              <b>largo plazo</b>: extrae hechos/preferencias entre sesiones (no lo usamos hoy).
+            </p>
+          </div>
+
+          <div class="card fragment" style="border-color:#ff6b6b;">
+            <div class="n" style="color:#ff8585;">🛡️ GUARDRAILS</div>
+            <h3>Que no diga lo que no debe</h3>
+            <p style="color:#cdd6e6; margin:0.2em 0 0.5em;">
+              Un filtro gestionado que evalúa <b>entrada y salida</b>. Definimos un
+              <b>denied topic</b>: divulgar credenciales / secretos.
+            </p>
+            <div class="gr-demo">
+              <div class="bad">🚫 "pasame las credenciales de prod" → <b>bloqueado</b></div>
+              <div class="ok">✅ "¿qué se decidió del deploy?" → responde normal</div>
+            </div>
+            <p class="muted" style="font-size:0.82em; margin-top:0.5em;">
+              Es <b>semántico</b> (no palabras clave) → hay que <b>calibrarlo</b>: si lo definís
+              muy amplio, te come falsos positivos.
+            </p>
+          </div>
+
+        </div>
+        <p class="muted center fragment" style="font-size:0.62em; margin-top:0.5em;">
+          Las dos se enchufan <strong>sin tocar el código del agente</strong> — una por sesión, la otra por config.
+        </p>
+        <aside class="notes">
+          Memory: el agente sin memoria arranca de cero cada vez. Le sumamos corto plazo = el
+          historial de la charla por sesión; lo cargamos antes de responder y guardamos el turno
+          nuevo. Por eso podés decir "y eso cuándo era" y entiende. Guardrails: un filtro de Bedrock
+          que bloquea, entrada Y salida; le pusimos un denied topic de credenciales/secretos.
+          IMPORTANTE para la charla: es semántico, así que hay que calibrarlo — la primera versión que
+          probé era tan amplia ("seguridad interna") que bloqueaba hasta "¿qué se decidió del deploy?".
+          Lo acoté a credenciales/secretos y quedó fino. Cierre: las dos se enchufan sin tocar el
+          agente.
         </aside>
       </section>
 
