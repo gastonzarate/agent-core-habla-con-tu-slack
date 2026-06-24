@@ -367,6 +367,66 @@ s3v.create_index(
         </aside>
       </section>
 
+      <!-- · COMPONENTES DE AGENTCORE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Amazon Bedrock AgentCore · los bloques</span>
+        <h2>Qué le podés <strong>sumar</strong> al agente</h2>
+        <p class="muted" style="font-size:0.62em; margin:0.1em 0 0.2em;">
+          Servicios gestionados que se enchufan al agente sin reescribirlo — usás solo los que necesitás.
+        </p>
+        <div class="ac-grid">
+          <div class="ac-card have fragment">
+            <span class="tag">YA LO USÁS</span>
+            <span class="ic">🚀</span>
+            <span class="t">Runtime</span>
+            <span class="s">Hosting serverless, sesión aislada por usuario. El paso 5.</span>
+          </div>
+          <div class="ac-card fragment">
+            <span class="ic">🧠</span>
+            <span class="t">Memory</span>
+            <span class="s">Memoria de corto y largo plazo entre conversaciones.</span>
+          </div>
+          <div class="ac-card fragment">
+            <span class="ic">🔌</span>
+            <span class="t">Gateway</span>
+            <span class="s">Convierte APIs y Lambdas en tools (MCP) sin código pegamento.</span>
+          </div>
+          <div class="ac-card fragment">
+            <span class="ic">🔐</span>
+            <span class="t">Identity</span>
+            <span class="s">Acceso seguro a recursos en nombre del usuario (OAuth).</span>
+          </div>
+          <div class="ac-card fragment">
+            <span class="ic">📈</span>
+            <span class="t">Observability</span>
+            <span class="s">Trazas, métricas y debugging del agente (OpenTelemetry).</span>
+          </div>
+          <div class="ac-card fragment">
+            <span class="ic">🧮</span>
+            <span class="t">Code Interpreter</span>
+            <span class="s">Ejecuta código en un sandbox aislado, a pedido del agente.</span>
+          </div>
+          <div class="ac-card fragment">
+            <span class="ic">🌐</span>
+            <span class="t">Browser</span>
+            <span class="s">Navegación web headless y segura para tareas en la web.</span>
+          </div>
+          <div class="ac-card fragment">
+            <span class="ic">🛡️</span>
+            <span class="t">Policy &amp; Guardrails</span>
+            <span class="s">Reglas y límites sobre qué puede y no puede hacer el agente.</span>
+          </div>
+        </div>
+        <aside class="notes">
+          Nuestro agente de hoy usa solo el Runtime (paso 5). Pero AgentCore es modular: cada bloque
+          se enchufa sin reescribir el agente. ¿Quieren que recuerde conversaciones? Memory. ¿Conectar
+          a la API interna del cliente como tools? Gateway. ¿Que actúe en nombre del usuario con sus
+          permisos? Identity. Trazabilidad y debugging? Observability. Y si necesita ejecutar código o
+          navegar la web, hay sandbox para eso. Mensaje: empezás mínimo y escalás capacidades — esto es
+          exactamente el tipo de arquitectura que armamos en Craftech.
+        </aside>
+      </section>
+
       <!-- 8 · HANDS-ON PASO 4: EL AGENTE -->
       <section data-background-color="#0a0e17">
         <span class="step-badge">Hands-on · Paso 4</span>
