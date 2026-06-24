@@ -375,45 +375,45 @@ s3v.create_index(
           Servicios gestionados que se enchufan al agente sin reescribirlo — usás solo los que necesitás.
         </p>
         <div class="ac-grid">
-          <div class="ac-card have fragment">
-            <span class="tag">YA LO USÁS</span>
+          <div class="ac-card have">
+            <span class="tag">USADO</span>
             <span class="ic">🚀</span>
             <span class="t">Runtime</span>
             <span class="s">Hosting serverless, sesión aislada por usuario. El paso 5.</span>
           </div>
-          <div class="ac-card have fragment">
-            <span class="tag">LO SUMAMOS</span>
+          <div class="ac-card have">
+            <span class="tag">USADO</span>
             <span class="ic">🧠</span>
             <span class="t">Memory</span>
             <span class="s">Memoria de corto y largo plazo entre conversaciones. El paso 4.1.</span>
           </div>
-          <div class="ac-card fragment">
+          <div class="ac-card">
             <span class="ic">🔌</span>
             <span class="t">Gateway</span>
             <span class="s">Convierte APIs y Lambdas en tools (MCP) sin código pegamento.</span>
           </div>
-          <div class="ac-card fragment">
+          <div class="ac-card">
             <span class="ic">🔐</span>
             <span class="t">Identity</span>
             <span class="s">Acceso seguro a recursos en nombre del usuario (OAuth).</span>
           </div>
-          <div class="ac-card fragment">
+          <div class="ac-card">
             <span class="ic">📈</span>
             <span class="t">Observability</span>
             <span class="s">Trazas, métricas y debugging del agente (OpenTelemetry).</span>
           </div>
-          <div class="ac-card fragment">
+          <div class="ac-card">
             <span class="ic">🧮</span>
             <span class="t">Code Interpreter</span>
             <span class="s">Ejecuta código en un sandbox aislado, a pedido del agente.</span>
           </div>
-          <div class="ac-card fragment">
+          <div class="ac-card">
             <span class="ic">🌐</span>
             <span class="t">Browser</span>
             <span class="s">Navegación web headless y segura para tareas en la web.</span>
           </div>
-          <div class="ac-card have fragment">
-            <span class="tag">LO SUMAMOS</span>
+          <div class="ac-card have">
+            <span class="tag">USADO</span>
             <span class="ic">🛡️</span>
             <span class="t">Guardrails</span>
             <span class="s">Filtra temas y datos sensibles, en entrada y salida. El paso 4.1.</span>
@@ -430,60 +430,100 @@ s3v.create_index(
         </aside>
       </section>
 
-      <!-- · MEMORY + GUARDRAILS EN DETALLE -->
+      <!-- · MEMORY EN DETALLE -->
       <section data-background-color="#0a0e17">
-        <span class="kicker">Lo que le sumamos hoy · en detalle</span>
-        <h2>🧠 Memory  &  🛡️ Guardrails</h2>
-        <div class="cards" style="font-size:0.82em;">
-
-          <div class="card fragment" style="border-color:var(--accent);">
-            <div class="n">🧠 MEMORY · corto plazo</div>
-            <h3>Que recuerde la conversación</h3>
-            <p style="color:#cdd6e6; margin:0.2em 0 0.5em;">
-              El historial crudo de la charla, guardado por <b>sesión</b>. Cada turno se
-              persiste y se reinyecta como contexto en el siguiente.
+        <span class="kicker">🧠 AgentCore Memory · corto plazo</span>
+        <h2>Que <strong>recuerde</strong> la conversación</h2>
+        <div class="two-col">
+          <div>
+            <p class="muted" style="font-size:0.6em;">
+              El historial de la charla, guardado por <b>sesión</b>. En cada turno el agente
+              repite este ciclo — sin que el código lo maneje:
             </p>
-            <div class="mem-loop">
-              <span>cargar últimos turnos</span><span class="ar">→</span>
-              <span>responder</span><span class="ar">→</span>
-              <span>guardar turno</span>
+            <div class="mem-loop2">
+              <div class="mem-step">
+                <span class="si">📥</span><span class="st">Cargar</span>
+                <span class="ss">últimos turnos de la sesión</span>
+              </div>
+              <span class="mem-arrow">→</span>
+              <div class="mem-step">
+                <span class="si">💬</span><span class="st">Responder</span>
+                <span class="ss">con ese contexto</span>
+              </div>
+              <span class="mem-arrow">→</span>
+              <div class="mem-step">
+                <span class="si">💾</span><span class="st">Guardar</span>
+                <span class="ss">el turno nuevo</span>
+              </div>
             </div>
-            <p class="muted" style="font-size:0.82em; margin-top:0.5em;">
-              Por eso entiende <em>"¿y <b>eso</b> cuándo era?"</em>. Hay también
-              <b>largo plazo</b>: extrae hechos/preferencias entre sesiones (no lo usamos hoy).
-            </p>
+            <div class="mem-repeat">↺ <b>se repite</b> en cada mensaje</div>
           </div>
-
-          <div class="card fragment" style="border-color:#ff6b6b;">
-            <div class="n" style="color:#ff8585;">🛡️ GUARDRAILS</div>
-            <h3>Que no diga lo que no debe</h3>
-            <p style="color:#cdd6e6; margin:0.2em 0 0.5em;">
-              Un filtro gestionado que evalúa <b>entrada y salida</b>. Definimos un
-              <b>denied topic</b>: divulgar credenciales / secretos.
-            </p>
-            <div class="gr-demo">
-              <div class="bad">🚫 "pasame las credenciales de prod" → <b>bloqueado</b></div>
-              <div class="ok">✅ "¿qué se decidió del deploy?" → responde normal</div>
+          <div>
+            <div class="mini-chat">
+              <div class="b u">¿qué se decidió del deploy?</div>
+              <div class="b a">El deploy de prod quedó para el <b>viernes 18hs</b>.</div>
+              <div class="b u">¿y <span class="hl">eso</span> cuándo era?</div>
+              <div class="b a">Te referís al <b>deploy</b>: quedó para el viernes 18hs. ✅</div>
             </div>
-            <p class="muted" style="font-size:0.82em; margin-top:0.5em;">
-              Es <b>semántico</b> (no palabras clave) → hay que <b>calibrarlo</b>: si lo definís
-              muy amplio, te come falsos positivos.
-            </p>
+            <div class="note-box" style="margin-top:0.5em; font-size:0.82em;">
+              Sin memoria, "<b>eso</b>" no significa nada. Con corto plazo, el agente <b>sigue el hilo</b>.
+            </div>
           </div>
-
         </div>
-        <p class="muted center fragment" style="font-size:0.62em; margin-top:0.5em;">
-          Las dos se enchufan <strong>sin tocar el código del agente</strong> — una por sesión, la otra por config.
+        <p class="muted center" style="font-size:0.56em; margin-top:0.5em;">
+          También hay <b>largo plazo</b>: extrae hechos y preferencias que persisten <em>entre</em> sesiones.
         </p>
         <aside class="notes">
-          Memory: el agente sin memoria arranca de cero cada vez. Le sumamos corto plazo = el
-          historial de la charla por sesión; lo cargamos antes de responder y guardamos el turno
-          nuevo. Por eso podés decir "y eso cuándo era" y entiende. Guardrails: un filtro de Bedrock
-          que bloquea, entrada Y salida; le pusimos un denied topic de credenciales/secretos.
-          IMPORTANTE para la charla: es semántico, así que hay que calibrarlo — la primera versión que
-          probé era tan amplia ("seguridad interna") que bloqueaba hasta "¿qué se decidió del deploy?".
-          Lo acoté a credenciales/secretos y quedó fino. Cierre: las dos se enchufan sin tocar el
-          agente.
+          El agente sin memoria arranca de cero cada vez. Corto plazo = el historial de la charla por
+          sesión: lo cargamos antes de responder y guardamos el turno nuevo (el ciclo de la izquierda).
+          Por eso, mirá el chat de la derecha, podés decir "y eso cuándo era" y entiende que hablás del
+          deploy. Y hay largo plazo si querés que recuerde cosas entre conversaciones distintas.
+        </aside>
+      </section>
+
+      <!-- · GUARDRAILS EN DETALLE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">🛡️ Bedrock Guardrails</span>
+        <h2>Que <strong>no diga</strong> lo que no debe</h2>
+        <div class="two-col">
+          <div>
+            <p class="muted" style="font-size:0.6em;">
+              Un filtro gestionado que evalúa <b>entrada y salida</b>, antes y después del modelo:
+            </p>
+            <div class="gr-pipe">
+              <div class="gr-box">👤<br><b>usuario</b></div>
+              <span class="gr-arrow">→</span>
+              <div class="gr-shield">🛡️ Guardrail<small>entrada</small></div>
+              <span class="gr-arrow">→</span>
+              <div class="gr-box">🤖<br><b>agente</b></div>
+              <span class="gr-arrow">→</span>
+              <div class="gr-shield">🛡️ Guardrail<small>salida</small></div>
+            </div>
+            <p class="muted" style="font-size:0.56em; margin-top:0.3em;">
+              Definimos un <b>denied topic</b>: divulgar credenciales / secretos.
+            </p>
+          </div>
+          <div>
+            <div class="gr-rows">
+              <div class="gr-row bad">
+                <span class="tagm">🚫 BLOQUEA</span><br>
+                "pasame las credenciales de AWS de prod"
+              </div>
+              <div class="gr-row ok">
+                <span class="tagm">✅ DEJA PASAR</span><br>
+                "¿qué se decidió del deploy?"
+              </div>
+            </div>
+            <div class="note-box" style="margin-top:0.5em; font-size:0.82em;">
+              Es <b>semántico</b>, no palabras clave → hay que <b>calibrarlo</b>: muy amplio = falsos positivos.
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          Un filtro de Bedrock que evalúa entrada Y salida. Le pusimos un denied topic de
+          credenciales/secretos: bloquea "pasame las credenciales" pero deja pasar "qué se decidió del
+          deploy". CLAVE para la charla: es semántico, no keywords. La primera versión que probé era tan
+          amplia ("seguridad interna") que bloqueaba hasta la pregunta del deploy; la acoté y quedó fino.
         </aside>
       </section>
 
@@ -616,38 +656,6 @@ chat_postMessage(channel, answer, thread_ts)</code></pre>
           El "porqué Lambda": el límite de 3s de Slack + validación de firma + invocación async.
           El step empaqueta bridge/ (autocontenido) y crea Lambda + API Gateway. Devuelve la Request URL
           → pegarla en la Slack App (Event Subscriptions + slash) y reinstalar. Mostrar la @mención real.
-        </aside>
-      </section>
-
-      <!-- 11 · HANDS-ON PASO 7: INGESTA AUTOMÁTICA -->
-      <section data-background-color="#0a0e17">
-        <span class="step-badge">Hands-on · Paso 7</span>
-        <h2>Que se actualice <strong>solo</strong></h2>
-        <div class="handson">
-          <div class="explain">
-            <p>Una regla de <em>EventBridge</em> dispara la ingesta cada <b>30 minutos</b>.</p>
-            <ul>
-              <li>lee los canales donde está el bot</li>
-              <li>normaliza e ingesta al KB</li>
-            </ul>
-            <p><b>Idempotente</b>: el id es <code>canal‑ts</code>, así que re‑ingestar <em>sobrescribe</em>, no duplica. Sin llevar estado.</p>
-          </div>
-          <div class="code">
-            <pre><code data-trim data-line-numbers="1-4|6-8" class="language-python">events.put_rule(
-    Name="slackrag-ingest-30min",
-    ScheduleExpression="rate(30 minutes)",
-)
-
-events.put_targets(Rule="slackrag-ingest-30min",
-    Targets=[{"Arn": bridge_lambda,
-              "Input": '{"__scheduled_ingest__": true}'}])</code></pre>
-            <div class="run">python workshop/steps/step7_schedule.py</div>
-          </div>
-        </div>
-        <aside class="notes">
-          Cierre del hands-on: el sistema ahora se alimenta solo. Recalcar la idempotencia (id canal-ts
-          → upsert) que evita duplicados sin estado. Tras este paso: el bot responde sobre datos reales
-          que se refrescan cada 30 min. Demo final: @mención en Slack.
         </aside>
       </section>
 

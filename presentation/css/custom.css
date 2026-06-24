@@ -85,6 +85,45 @@ html, body { background: var(--bg); }
   background: var(--accent); color: #06231e; border-radius: 6px; padding: 1px 7px;
 }
 
+/* Slide Memory (🧠) — loop + mini chat */
+.mem-loop2 { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 0.3em 0; }
+.mem-step {
+  background: var(--card); border: 1px solid var(--accent); border-radius: 16px;
+  padding: 16px 14px; min-width: 130px; text-align: center;
+  box-shadow: 0 10px 30px rgba(56,224,198,0.08);
+}
+.mem-step .si { font-size: 1.7em; display: block; }
+.mem-step .st { font-weight: 800; color: var(--accent); font-size: 0.6em; display: block; margin-top: 6px; }
+.mem-step .ss { color: var(--muted); font-size: 0.46em; display: block; margin-top: 2px; }
+.mem-arrow { color: var(--accent); font-size: 1.5em; }
+.mem-repeat { text-align: center; color: var(--muted); font-size: 0.55em; margin-top: 0.4em; letter-spacing: 0.04em; }
+.mem-repeat b { color: var(--accent); }
+
+.mini-chat { display: flex; flex-direction: column; gap: 8px; font-size: 0.6em; margin-top: 0.2em; }
+.mini-chat .b { border-radius: 12px; padding: 9px 13px; max-width: 92%; line-height: 1.4; }
+.mini-chat .u { background: rgba(124,156,245,0.16); align-self: flex-end; }
+.mini-chat .a { background: var(--card); border: 1px solid var(--border); align-self: flex-start; }
+.mini-chat .hl { color: var(--accent); font-weight: 800; }
+
+/* Slide Guardrails (🛡️) — pipeline + filas */
+.gr-pipe { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0.2em 0 0.5em; font-size: 0.6em; flex-wrap: wrap; }
+.gr-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 11px 15px; text-align: center; }
+.gr-box b { color: var(--fg); }
+.gr-arrow { color: #ff8585; font-size: 1.4em; }
+.gr-shield {
+  background: rgba(255,107,107,0.12); border: 1px solid #ff6b6b; border-radius: 14px;
+  padding: 12px 18px; color: #ff8585; font-weight: 800; text-align: center;
+  box-shadow: 0 10px 30px rgba(255,107,107,0.1);
+}
+.gr-shield small { display: block; color: var(--muted); font-weight: 500; font-size: 0.78em; margin-top: 2px; }
+.gr-rows { display: flex; flex-direction: column; gap: 10px; font-size: 0.62em; }
+.gr-row { border-radius: 12px; padding: 11px 15px; border: 1px solid var(--border); line-height: 1.35; }
+.gr-row.bad { background: rgba(255,107,107,0.1); border-color: #ff6b6b; }
+.gr-row.ok { background: rgba(56,224,198,0.08); border-color: var(--accent); }
+.gr-row .tagm { font-weight: 800; }
+.gr-row.bad .tagm { color: #ff8585; }
+.gr-row.ok .tagm { color: var(--accent); }
+
 /* Mock de Slack */
 .slack {
   background: #1a1d29; border: 1px solid var(--border); border-radius: 14px;
