@@ -387,6 +387,45 @@ agent("¿cuándo es el deploy de prod?")</code></pre>
         </aside>
       </section>
 
+      <!-- · EL LOOP DEL AGENTE (animado) -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Cómo trabaja · el loop del agente</span>
+        <h2>Piensa, <strong>usa herramientas</strong>, repite</h2>
+        <div class="agentloop" id="agentloop">
+          <div class="al-diagram">
+            <div class="al-row">
+              <span class="al-chip" data-st="think">🧠<br>Razona</span>
+              <span class="al-ar">→</span>
+              <span class="al-chip" data-st="act">🔧<br>Llama tool</span>
+              <span class="al-ar">→</span>
+              <span class="al-chip" data-st="observe">👁️<br>Observa</span>
+            </div>
+            <div class="al-loopback">↺ repite hasta tener la respuesta</div>
+            <span class="al-chip answer" data-st="answer">✅ Responde</span>
+          </div>
+          <div class="al-transcript">
+            <div class="al-line t-think">🧠 «necesito datos del Slack…»</div>
+            <div class="al-line t-act">🔧 ask_kb("deploy de prod")</div>
+            <div class="al-line t-observe">👁️ "ana: el deploy quedó para el viernes 18hs"</div>
+            <div class="al-line t-think">🧠 «¿y el freeze? mejor confirmo…»</div>
+            <div class="al-line t-act">🔧 ask_kb("freeze de código")</div>
+            <div class="al-line t-observe">👁️ "beto: freeze el jueves 12hs"</div>
+            <div class="al-line t-answer">✅ "Deploy viernes 18hs; freeze jueves 12. 📎"</div>
+          </div>
+        </div>
+        <p class="muted center" style="font-size:0.56em; margin-top:0.7em;">
+          El agente <strong>decide</strong> qué tool llamar y <strong>cuántas veces</strong> —
+          razona con cada resultado— hasta que tiene con qué responder. No es un guion fijo.
+        </p>
+        <aside class="notes">
+          Este es el corazón de un agente: el loop. Mirá el transcript a la derecha — el agente piensa,
+          decide llamar ask_kb, observa el resultado, y como le falta info (el freeze) razona y llama la
+          tool OTRA VEZ. Recién cuando tiene todo, responde. La etapa activa se ilumina a la izquierda.
+          El punto: el agente decide qué herramientas usar y cuántas iteraciones hacer — eso es lo que
+          lo diferencia de una sola llamada a un modelo.
+        </aside>
+      </section>
+
       <!-- 9 · HANDS-ON PASO 5: DEPLOY A AGENTCORE RUNTIME -->
       <section data-background-color="#0a0e17">
         <span class="step-badge">Hands-on · Paso 5</span>
@@ -616,5 +655,6 @@ events.put_targets(Rule="slackrag-ingest-30min",
   <script src="js/kbpipeline.js"></script>
   <script src="js/agent3d.js"></script>
   <script src="js/dataquality.js"></script>
+  <script src="js/agentloop.js"></script>
 </body>
 </html>

@@ -197,6 +197,29 @@ html, body { background: var(--bg); }
 .s-grd .lbl { color: #ff6b6b; }   .s-grd .body { border-left-color: #ff6b6b; background: rgba(255, 107, 107, .06); }
 .s-usr .lbl { color: #fff; }      .s-usr .body { border-left-color: #fff; background: rgba(255, 255, 255, .06); }
 
+/* Loop del agente (animado) */
+.agentloop { display: flex; gap: 36px; align-items: center; justify-content: center; margin-top: 0.7em; }
+.al-diagram { display: flex; flex-direction: column; align-items: center; gap: 12px; flex: 0 0 auto; }
+.al-row { display: flex; align-items: center; gap: 10px; }
+.al-chip {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 10px 14px; font-size: 0.5em; font-weight: 700; text-align: center; color: var(--muted);
+  transition: all 0.25s; min-width: 70px; line-height: 1.25;
+}
+.al-chip.active {
+  border-color: var(--accent); color: var(--fg);
+  background: rgba(56, 224, 198, 0.12); box-shadow: 0 0 18px rgba(56, 224, 198, 0.4);
+}
+.al-ar { color: var(--muted); font-size: 1.1em; }
+.al-loopback {
+  font-size: 0.42em; color: var(--accent2);
+  border: 1px dashed rgba(124, 156, 245, 0.45); border-radius: 999px; padding: 3px 12px;
+}
+.al-transcript { flex: 1; max-width: 17em; text-align: left; font-family: ui-monospace, Menlo, monospace; }
+.al-line { font-size: 0.46em; line-height: 1.5; color: #cdd6e6; opacity: 0.12; transform: translateX(7px); transition: all 0.3s; margin: 5px 0; }
+.al-line.show { opacity: 1; transform: none; }
+.al-line.t-answer { color: var(--accent); font-weight: 700; }
+
 .big { font-size: 1.5em; line-height: 1.2; }
 .dim { opacity: 0.45; }
 .reveal ul { margin-left: 1em; }
