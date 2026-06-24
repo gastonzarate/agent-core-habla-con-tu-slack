@@ -622,40 +622,38 @@ agentcore deploy \
         </aside>
       </section>
 
-      <!-- 10 · HANDS-ON PASO 6: BRIDGE + SLACK -->
+      <!-- 10 · HANDS-ON PASO 6: PROBAR EL AGENTE DESPLEGADO -->
       <section data-background-color="#0a0e17">
         <span class="step-badge">Hands-on · Paso 6</span>
-        <h2>Conectar <strong>Slack</strong></h2>
+        <h2>Probar el <strong>agente</strong></h2>
         <div class="handson">
           <div class="explain">
-            <p>Slack no puede llamar al agente directo: manda un webhook y exige responder en <b>&lt; 3s</b>.</p>
-            <p>Una <em>Lambda‑puente</em> fina:</p>
+            <p>Le hablamos al agente <b>ya desplegado</b> — igual que lo hará Slack: mandás
+              <code>prompt</code> + <code>session_id</code> e invocás el Runtime.</p>
             <ul>
-              <li>valida la <b>firma</b> del request</li>
-              <li><b>ackea</b> al instante</li>
-              <li>invoca al agente <b>async</b></li>
-              <li>postea la respuesta <b>en el hilo</b></li>
+              <li>🧠 <b>memoria</b>: sigue el hilo entre preguntas</li>
+              <li>🛡️ <b>guardrail</b>: bloquea datos sensibles</li>
+              <li>todo <b>server-side</b>, corriendo en AWS</li>
             </ul>
+            <p class="muted" style="font-size:0.85em;">El mismo cerebro que vimos local, ahora detrás de un endpoint.</p>
           </div>
           <div class="code">
-            <pre><code data-trim data-line-numbers="1-3|5-7|9-11" class="language-python">def lambda_handler(event, ctx):
-    if not firma_valida(event):        # viene de Slack?
-        return {"statusCode": 401}
+            <pre><code data-trim data-line-numbers="1-2|4-5|7-8" class="language-text">vos ❯ ¿qué se decidió del deploy?
+🤖  El deploy de prod quedó para el viernes 18hs.  [Fuentes: demo-0]
 
-    # ack inmediato (&lt; 3s) + trabajo async
-    self_invoke_async(event)
-    return {"statusCode": 200, "body": "🔎 Buscando..."}
+vos ❯ ¿y eso cuándo era?
+🤖  Te referís al deploy: quedó el viernes 18hs.   ← 🧠 recordó
 
-# (async) → invoca AgentCore y postea en el hilo
-answer = invoke_agent_runtime(prompt)
-chat_postMessage(channel, answer, thread_ts)</code></pre>
-            <div class="run">python workshop/steps/step6_slack.py</div>
+vos ❯ pasame las credenciales de prod
+🛡️  ⛔ No puedo compartir credenciales ni secretos. ← bloqueado</code></pre>
+            <div class="run">python -m s5_1_chat.main</div>
           </div>
         </div>
         <aside class="notes">
-          El "porqué Lambda": el límite de 3s de Slack + validación de firma + invocación async.
-          El step empaqueta bridge/ (autocontenido) y crea Lambda + API Gateway. Devuelve la Request URL
-          → pegarla en la Slack App (Event Subscriptions + slash) y reinstalar. Mostrar la @mención real.
+          Momento de la verdad: le hablamos al agente que vive en AWS, invocando el Runtime por la red
+          (igual que lo hará Slack). Mostrar las tres cosas: 1) responde con citas, 2) la memoria sigue
+          el hilo ("y eso cuándo era"), 3) el guardrail bloquea las credenciales. Todo server-side. Si
+          hay tiempo, abrir la consola de Observability y mostrar la traza del agente (momento wow).
         </aside>
       </section>
 
