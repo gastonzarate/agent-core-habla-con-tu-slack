@@ -111,6 +111,12 @@ Con el `.env` cargado (con `SLACK_BOT_TOKEN`), ingesta el **último día real de
 Slack** y pregunta. Sin token, usa mensajes de ejemplo. El retrieval encuentra
 el correcto por significado, con su cita.
 
+**Solo preguntar** (sin re-ingestar) — para probar varias preguntas en vivo:
+```bash
+python -m s3_1_query.main "¿qué cliente renovó contrato?"
+python -m s3_1_query.main "¿cuándo es el deploy?"
+```
+
 ## Paso 4 · El agente (local)
 
 ```bash
