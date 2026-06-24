@@ -72,6 +72,10 @@ set -a; source .env; set +a     # cargá las variables (antes de los pasos 3 y 6
 Slack App**, editás `.env` y volvés a correr `set -a; source .env; set +a`.
 El `.env` está gitignored — no se sube.
 
+> ⚠️ **Invitá el bot a los canales** que quieras indexar: en cada canal,
+> `/invite @tu-bot`. Slack solo deja leer canales donde el bot es **miembro**
+> — si no está en ninguno, la ingesta (pasos 3 y 7) trae **0 mensajes**.
+
 > **Todos los pasos se corren desde `workshop/`** con `python -m <carpeta>.main`
 > (así encuentran `constants.py`). No hace falta `cd` a cada carpeta.
 
