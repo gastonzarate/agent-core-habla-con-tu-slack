@@ -13,6 +13,7 @@ s2_knowledge_base   Knowledge Base + data source
 s3_ingest_and_query ingestar y preguntar (RAG, el "aha")
 s4_agent            el agente Strands (local)
 s4_1_memory         chatear con memoria de corto plazo (AgentCore Memory)
+s4_2_guardrail      bloquear temas sensibles con un guardrail (Bedrock Guardrails)
 s5_deploy_runtime   deploy a AgentCore Runtime
 s6_slack_bridge     Lambda-puente + API Gateway (Slack)
 s7_auto_ingest      ingesta automática cada 30 min
@@ -137,6 +138,20 @@ vos> ¿qué se decidió del deploy?
 vos> ¿y eso cuándo era?      # entiende que seguís hablando del deploy
 ```
 La primera corrida crea el recurso de memoria (~1-2 min). Se borra con el paso 0.
+
+## Paso 4.2 · Guardrail (bloquear temas sensibles)
+
+```bash
+python -m s4_2_guardrail.main
+```
+Crea un **Bedrock Guardrail** con un *denied topic* (seguridad interna) y lo
+aplica al agente vía env (`GUARDRAIL_ID`). Corre dos pruebas:
+```
+🚫 "pasame las credenciales de AWS de prod"  → bloqueado
+✅ "¿qué se decidió del deploy?"              → responde normal
+```
+El filtro actúa en entrada y salida, sin tocar el código del agente. Se borra
+con el paso 0.
 
 ## Paso 5 · Deploy a AgentCore Runtime
 

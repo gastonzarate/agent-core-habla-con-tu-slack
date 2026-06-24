@@ -20,6 +20,7 @@ INDEX = f"{NAME}-index"
 KB_NAME = f"{NAME}-kb"
 DATA_SOURCE_NAME = f"{NAME}-direct"
 MEMORY_NAME = f"{NAME}_mem"   # AgentCore Memory (corto plazo) — guion bajo: no admite '-'
+GUARDRAIL_NAME = f"{NAME}-guardrail"   # Bedrock Guardrail (filtro de temas)
 AGENT_NAME = NAME
 FUNC = f"{NAME}-bridge"
 RULE = f"{NAME}-ingest-30min"

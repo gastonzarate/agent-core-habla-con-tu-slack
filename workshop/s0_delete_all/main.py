@@ -13,7 +13,8 @@ import time
 
 import boto3
 from botocore.exceptions import ClientError
-from constants import AGENT_NAME, API_NAME, BUCKET, FUNC, INDEX, KB_NAME, MEMORY_NAME, REGION, ROLES, RULE
+from constants import (AGENT_NAME, API_NAME, BUCKET, FUNC, GUARDRAIL_NAME, INDEX, KB_NAME, MEMORY_NAME,
+                       REGION, ROLES, RULE)
 
 
 def step(msg, fn):
@@ -31,6 +32,7 @@ def step(msg, fn):
         print(f"   {msg}: no existía ⏭️")
 
 
+bedrock = boto3.client("bedrock", region_name=REGION)
 events = boto3.client("events", region_name=REGION)
 lam = boto3.client("lambda", region_name=REGION)
 api = boto3.client("apigatewayv2", region_name=REGION)
@@ -59,6 +61,16 @@ step(
             r["agentRuntimeId"]
             for r in ac.list_agent_runtimes()["agentRuntimes"]
             if r["agentRuntimeName"] == AGENT_NAME
+        )
+    ),
+)
+
+# 4a) Bedrock Guardrail (del paso 4.2)
+step(
+    "Bedrock Guardrail",
+    lambda: bedrock.delete_guardrail(
+        guardrailIdentifier=next(
+            g["id"] for g in bedrock.list_guardrails()["guardrails"] if g["name"] == GUARDRAIL_NAME
         )
     ),
 )

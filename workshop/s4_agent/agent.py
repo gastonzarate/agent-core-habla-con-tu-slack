@@ -18,9 +18,16 @@ KB_ID = os.environ["KB_ID"]
 DATA_SOURCE_ID = os.environ["DATA_SOURCE_ID"]
 MODEL_ID = os.environ.get("MODEL_ID", "us.anthropic.claude-sonnet-4-6")
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", "")
+# Guardrail OPCIONAL (paso 4.2): si está seteado, Bedrock filtra entrada/salida.
+GUARDRAIL_ID = os.environ.get("GUARDRAIL_ID", "")
+GUARDRAIL_VERSION = os.environ.get("GUARDRAIL_VERSION", "DRAFT")
 
 app = BedrockAgentCoreApp()
-_model = BedrockModel(model_id=MODEL_ID, region_name=REGION, temperature=0.2)
+_model_kwargs = dict(model_id=MODEL_ID, region_name=REGION, temperature=0.2)
+if GUARDRAIL_ID:
+    _model_kwargs.update(guardrail_id=GUARDRAIL_ID, guardrail_version=GUARDRAIL_VERSION,
+                         guardrail_trace="enabled")
+_model = BedrockModel(**_model_kwargs)
 
 
 @tool
