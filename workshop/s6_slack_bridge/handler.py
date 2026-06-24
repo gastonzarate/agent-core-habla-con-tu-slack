@@ -185,12 +185,19 @@ def lambda_handler(event, context):
     if req["kind"] == "event":
         ev = req["data"].get("event", {})
         et = ev.get("type")
+        is_real_user_msg = (et == "message" and not ev.get("subtype")
+                            and not ev.get("bot_id") and ev.get("user") != BOT_USER_ID
+                            and ev.get("text"))
         if et == "app_mention":
             _self_invoke({"kind": "ask", "text": _strip_mention(ev.get("text", "")),
                           "channel": ev["channel"], "thread_ts": ev.get("thread_ts") or ev.get("ts"),
                           "session": ev["channel"]})
-        elif (et == "message" and not ev.get("subtype")
-              and not ev.get("bot_id") and ev.get("user") != BOT_USER_ID and ev.get("text")):
+        elif is_real_user_msg and ev.get("channel_type") == "im":
+            # DM directo al bot → responder (no ingestar)
+            _self_invoke({"kind": "ask", "text": ev["text"],
+                          "channel": ev["channel"], "session": ev["channel"]})
+        elif is_real_user_msg:
+            # mensaje normal de canal → ingestar a la KB
             _self_invoke({"kind": "ingest_one", "user": ev.get("user", ""),
                           "text": ev["text"], "ts": ev["ts"], "channel": ev["channel"]})
         return {"statusCode": 200, "body": "ok"}

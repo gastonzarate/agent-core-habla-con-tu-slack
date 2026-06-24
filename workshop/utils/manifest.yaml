@@ -5,6 +5,10 @@ features:
   bot_user:
     display_name: slackbot
     always_online: true
+  app_home:
+    home_tab_enabled: true                # requerido por Slack al declarar app_home
+    messages_tab_enabled: true            # habilita el DM con el bot
+    messages_tab_read_only_enabled: false # permite escribirle por DM
   slash_commands:
     - command: /ask
       description: Preguntale a tu Slack
@@ -21,11 +25,14 @@ oauth_config:
       - groups:read         # listar canales privados del bot
       - users:read          # resolver IDs de usuario -> nombres
       - commands            # (opcional) slash command /ask
+      - im:history          # leer los DMs que recibe el bot
+      - im:write            # responder por DM
 settings:
   event_subscriptions:
     # request_url: https://<API_GATEWAY>.execute-api.<region>.amazonaws.com  # completar (paso 6)
     bot_events:
       - app_mention
+      - message.im        # recibir DMs directos al bot
   org_deploy_enabled: false
   socket_mode_enabled: false
   token_rotation_enabled: false

@@ -12,6 +12,7 @@ s1_vector_bucket    base vectorial (S3 Vectors)
 s2_knowledge_base   Knowledge Base + data source
 s3_ingest_and_query ingestar y preguntar (RAG, el "aha")
 s4_agent            el agente Strands (local)
+s4_1_memory         chatear con memoria de corto plazo (AgentCore Memory)
 s5_deploy_runtime   deploy a AgentCore Runtime
 s6_slack_bridge     Lambda-puente + API Gateway (Slack)
 s7_auto_ingest      ingesta automática cada 30 min
@@ -123,6 +124,19 @@ python -m s3_1_query.main "¿cuándo es el deploy?"
 python -m s4_agent.main
 ```
 El agente decide usar la tool `ask_kb` y Claude redacta la respuesta.
+
+## Paso 4.1 · Chatear con memoria (corto plazo)
+
+```bash
+python -m s4_1_memory.main
+```
+Chat interactivo. Le suma **AgentCore Memory** (corto plazo): guarda cada turno
+y se lo pasa como contexto al siguiente. Probá en orden:
+```
+vos> ¿qué se decidió del deploy?
+vos> ¿y eso cuándo era?      # entiende que seguís hablando del deploy
+```
+La primera corrida crea el recurso de memoria (~1-2 min). Se borra con el paso 0.
 
 ## Paso 5 · Deploy a AgentCore Runtime
 

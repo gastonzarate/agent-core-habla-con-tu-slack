@@ -134,6 +134,16 @@ if "--run" not in sys.argv:
 
 print(f"🔑 Asegurando IAM role {RUNTIME_ROLE}...")
 ensure_runtime_role()
+
+# configure conserva el agent_id de un deploy anterior; si ese runtime se borró
+# en AWS, deploy intenta hacer UpdateAgentRuntime sobre un ID inexistente y falla
+# con ResourceNotFoundException. Borramos la config previa para empezar limpio
+# (deploy crea un runtime nuevo). El caché de build en .bedrock_agentcore/ no estorba.
+stale_config = Path(AGENT_DIR) / ".bedrock_agentcore.yaml"
+if stale_config.exists():
+    print(f"🧹 Borrando config previa ({stale_config.name}) para crear runtime nuevo...")
+    stale_config.unlink()
+
 print("▶️  configure...")
 # corremos desde s4_agent/ (el CLI exige entrypoint dentro del cwd); newlines = aceptar defaults
 subprocess.run(configure, cwd=AGENT_DIR, input=b"\n" * 20, check=True)

@@ -13,7 +13,7 @@ import time
 
 import boto3
 from botocore.exceptions import ClientError
-from constants import AGENT_NAME, API_NAME, BUCKET, FUNC, INDEX, KB_NAME, REGION, ROLES, RULE
+from constants import AGENT_NAME, API_NAME, BUCKET, FUNC, INDEX, KB_NAME, MEMORY_NAME, REGION, ROLES, RULE
 
 
 def step(msg, fn):
@@ -59,6 +59,18 @@ step(
             r["agentRuntimeId"]
             for r in ac.list_agent_runtimes()["agentRuntimes"]
             if r["agentRuntimeName"] == AGENT_NAME
+        )
+    ),
+)
+
+# 4b) AgentCore Memory (corto plazo, del paso 4.1)
+step(
+    "AgentCore Memory",
+    lambda: ac.delete_memory(
+        memoryId=next(
+            m["id"]
+            for m in ac.list_memories()["memories"]
+            if m.get("id", "").startswith(MEMORY_NAME) or m.get("name") == MEMORY_NAME
         )
     ),
 )

@@ -75,12 +75,18 @@ env = {"AGENT_RUNTIME_ARN": runtime_arn, "KB_ID": kb_id, "DATA_SOURCE_ID": ds_id
        "SLACK_BOT_TOKEN": os.environ.get("SLACK_BOT_TOKEN", ""),
        "SLACK_BOT_USER_ID": os.environ.get("SLACK_BOT_USER_ID", "")}
 
-# 3) función Lambda (con reintento mientras el role recién creado propaga)
+# 3) función Lambda — idempotente: crea si no existe, si ya existe actualiza código + env
 print(f"λ  Función {FUNC}")
 for intento in range(6):
     try:
         lam.create_function(FunctionName=FUNC, Runtime="python3.12", Handler="handler.lambda_handler",
                             Role=role_arn, Timeout=120, Code={"ZipFile": code}, Environment={"Variables": env})
+        break
+    except lam.exceptions.ResourceConflictException:
+        print("   ya existe → actualizando código y configuración...")
+        lam.update_function_code(FunctionName=FUNC, ZipFile=code)
+        lam.get_waiter("function_updated").wait(FunctionName=FUNC)
+        lam.update_function_configuration(FunctionName=FUNC, Environment={"Variables": env})
         break
     except ClientError as e:
         if "cannot be assumed" in str(e) and intento < 5:
@@ -89,13 +95,22 @@ for intento in range(6):
         else:
             raise
 
-# 4) API HTTP que la expone
+# 4) API HTTP que la expone — reutiliza la existente si ya fue creada
 print("🌐 API Gateway")
-created = api.create_api(Name=API_NAME, ProtocolType="HTTP",
-                         Target=f"arn:aws:lambda:{REGION}:{acct}:function:{FUNC}")
-lam.add_permission(FunctionName=FUNC, StatementId="apigw", Action="lambda:InvokeFunction",
-                   Principal="apigateway.amazonaws.com",
-                   SourceArn=f"arn:aws:execute-api:{REGION}:{acct}:{created['ApiId']}/*")
+existing = next((a for a in api.get_apis()["Items"] if a["Name"] == API_NAME), None)
+if existing:
+    print("   ya existe → reutilizando")
+    endpoint = existing["ApiEndpoint"]
+else:
+    created = api.create_api(Name=API_NAME, ProtocolType="HTTP",
+                             Target=f"arn:aws:lambda:{REGION}:{acct}:function:{FUNC}")
+    endpoint = created["ApiEndpoint"]
+    try:
+        lam.add_permission(FunctionName=FUNC, StatementId="apigw", Action="lambda:InvokeFunction",
+                           Principal="apigateway.amazonaws.com",
+                           SourceArn=f"arn:aws:execute-api:{REGION}:{acct}:{created['ApiId']}/*")
+    except lam.exceptions.ResourceConflictException:
+        pass  # el permiso ya estaba
 
-print(f"\n✅ Bridge listo. Request URL para Slack:\n   {created['ApiEndpoint']}")
+print(f"\n✅ Bridge listo. Request URL para Slack:\n   {endpoint}")
 print("   → pegala en la Slack App (Event Subscriptions + Slash Commands) y reinstalá.")
