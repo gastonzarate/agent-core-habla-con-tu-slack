@@ -755,40 +755,42 @@ vos ❯ pasame las credenciales
         </aside>
       </section>
 
-      <!-- 13 · COSTOS + MANTLE -->
+      <!-- 13 · COSTOS -->
       <section data-background-color="#0a0e17">
         <span class="kicker">El argumento · Costos</span>
         <h2>Consumo puro · <strong>~$0 en reposo</strong></h2>
         <div class="two-col">
           <div>
-            <p class="muted" style="font-size:0.6em;">Precios reales AgentCore (consumo, sin mínimos):</p>
+            <p class="muted" style="font-size:0.58em;">AgentCore — pagás por consumo, sin mínimos:</p>
             <table class="data">
               <tr><th>Componente</th><th>Precio</th></tr>
               <tr><td>Runtime · CPU</td><td class="num">$0.0895 / vCPU‑h</td></tr>
               <tr><td>Runtime · memoria</td><td class="num">$0.00945 / GB‑h</td></tr>
               <tr><td>Gateway · llamadas</td><td class="num">$0.005 / 1.000</td></tr>
-              <tr><td>Memory · largo plazo</td><td class="num">$0.75 / 1.000·mes</td></tr>
               <tr><td>Identity (con Runtime)</td><td class="num">gratis</td></tr>
               <tr class="total"><td>En reposo</td><td class="num">≈ $0</td></tr>
             </table>
-            <div class="note-box">CPU no se cobra en <em>I/O wait</em>. Facturación por <b>segundo</b>. (+ tokens de Bedrock aparte.)</div>
+            <p class="muted" style="font-size:0.54em; margin-top:0.4em;">CPU no se cobra en <em>I/O wait</em> · facturación por <b>segundo</b>.</p>
           </div>
           <div>
-            <p class="muted" style="font-size:0.6em;">¿Y si querés <em>cobrarlo</em> o ver el uso por cliente?</p>
-            <ul class="pill-list">
-              <li>📊 <b>Mantle</b> — la capa de negocio para apps de IA</li>
-              <li>metering de uso por <b>cliente / equipo</b></li>
-              <li>billing usage‑based + planes</li>
-              <li>se integra vía <b>MCP</b> y webhooks</li>
-            </ul>
-            <div class="note-box"><b>Mantle</b> mide y monetiza el consumo del agente: ideal si esto se vuelve un producto interno con chargeback o un SaaS.</div>
+            <p class="muted" style="font-size:0.58em;">Lo que le sumamos hoy (también por uso):</p>
+            <table class="data">
+              <tr><th>Add‑on</th><th>Precio</th></tr>
+              <tr><td>Memory · corto plazo</td><td class="num">$0.25 / 1.000 ev.</td></tr>
+              <tr><td>Guardrail · denied topic</td><td class="num">$0.15 / 1.000 u.</td></tr>
+              <tr><td>Tokens (Claude · Titan)</td><td class="num">≈ 1¢ / pregunta</td></tr>
+            </table>
+            <div class="note-box" style="font-size:0.56em;">
+              A escala demo, <b>centavos</b>. Sin el <b>piso mensual</b> de una base vectorial dedicada — en reposo, ~$0.
+            </div>
           </div>
         </div>
         <aside class="notes">
-          El mensaje comercial: pagás solo cuando se usa, en reposo no pagás infra. Diferencia con
-          OpenSearch (piso de cientos de USD/mes). Mantle entra para el caso "lo quiero cobrar / medir
-          por cliente": metering + billing usage-based, integrable por MCP. Honestidad: los tokens del
-          modelo (Claude/Titan) se facturan aparte en Bedrock.
+          El mensaje comercial: pagás solo cuando se usa, en reposo no pagás infra (distinto de una base
+          vectorial dedicada tipo OpenSearch Serverless, que tiene piso mensual). Izquierda: el core
+          AgentCore. Derecha: lo que sumamos hoy — memoria corto plazo a $0.25 el millar de eventos,
+          guardrail a $0.15 el millar de "text units" (un text unit = hasta 1000 caracteres), y los tokens
+          del modelo ya los vimos (~1 centavo la pregunta). Todo consumo, todo centavos a esta escala.
         </aside>
       </section>
 
