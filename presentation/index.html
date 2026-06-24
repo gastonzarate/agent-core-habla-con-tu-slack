@@ -682,39 +682,51 @@ vos ❯ pasame las credenciales de prod
         </aside>
       </section>
 
-      <!-- 12 · OBSERVABILITY -->
+      <!-- 12 · OBSERVABILITY + COSTO DE TOKENS -->
       <section data-background-color="#0a0e17">
         <span class="kicker">Producción · Observability</span>
-        <h2>¿Cómo sabés que <strong>anda bien</strong>?</h2>
+        <h2>Qué se <strong>mide</strong>, cuánto <strong>cuesta</strong>, dónde <strong>verlo</strong></h2>
         <div class="two-col">
           <div>
-            <p class="muted" style="font-size:0.62em;">AgentCore emite telemetría <em>OpenTelemetry</em> a CloudWatch. Métricas reales del runtime, por minuto:</p>
+            <p class="muted" style="font-size:0.58em;">AgentCore manda telemetría <em>OpenTelemetry</em> a CloudWatch — sin instrumentar nada:</p>
             <table class="data">
-              <tr><th>Métrica</th><th>Qué mide</th></tr>
-              <tr><td>Invocations</td><td>requests al agente</td></tr>
-              <tr><td>Session Count</td><td>sesiones nuevas</td></tr>
+              <tr><th>Se mide</th><th>Qué</th></tr>
+              <tr><td>Invocations · Sessions</td><td>requests · sesiones</td></tr>
               <tr><td>Latency</td><td>tiempo end‑to‑end</td></tr>
-              <tr><td>Token usage</td><td>tokens in / out</td></tr>
-              <tr><td>Total Errors</td><td>% sobre invocaciones</td></tr>
-              <tr><td>Throttles</td><td>rate limiting (429)</td></tr>
-              <tr><td>CPU / Memory</td><td>vCPU‑h · GB‑h (= costo)</td></tr>
+              <tr><td><b>Token usage</b></td><td>tokens in / out</td></tr>
+              <tr><td>Errors · Throttles</td><td>% fallas · 429</td></tr>
+              <tr><td>CPU / Memory</td><td>vCPU‑h · GB‑h</td></tr>
             </table>
+            <p class="muted" style="font-size:0.56em; margin-top:0.3em;">
+              + <b>trazas</b>: qué tool llamó y por qué · latencia por span · payloads · tipo de error.
+            </p>
           </div>
           <div>
-            <p class="muted" style="font-size:0.62em;">Además, <b>traces y spans</b> de cada paso:</p>
-            <ul class="pill-list">
-              <li>🔍 <b>Traza</b> del razonamiento: qué tool llamó y por qué</li>
-              <li>⏱️ <b>latency_ms</b> por span (dónde se va el tiempo)</li>
-              <li>📦 request / response payload de cada invocación</li>
-              <li>❌ <b>error_type</b>: user · system · throttle</li>
-            </ul>
-            <div class="note-box">Dashboard de <b>CloudWatch GenAI Observability</b> → trazas, errores y tokens, sin instrumentar nada.</div>
+            <p class="muted" style="font-size:0.58em;">El costo real son los <b>tokens del modelo</b> (lo demás, centavos):</p>
+            <table class="data">
+              <tr><th>Tokens (Bedrock, on‑demand)</th><th>Precio</th></tr>
+              <tr><td>Claude Sonnet 4.6 · entrada</td><td class="num">$3 / 1M</td></tr>
+              <tr><td>Claude Sonnet 4.6 · salida</td><td class="num">$15 / 1M</td></tr>
+              <tr><td>Titan embeddings</td><td class="num">centavos / 1M</td></tr>
+              <tr class="total"><td>1 pregunta (~2K in · 300 out)</td><td class="num">≈ 1¢</td></tr>
+            </table>
+            <div class="note-box" style="font-size:0.92em;">
+              <b>Dónde verlo:</b> 📊 CloudWatch <em>GenAI Observability</em> (tokens, latencia, trazas) ·
+              💵 <em>Cost Explorer</em> (el $ por servicio) · 📜 Bedrock <em>model invocation logs</em>.
+            </div>
           </div>
         </div>
+        <p class="muted center" style="font-size:0.54em; margin-top:0.4em;">
+          <b>prompt caching</b> recorta hasta ~90% lo cacheado · precios <a href="https://aws.amazon.com/bedrock/pricing/">aws.amazon.com/bedrock/pricing</a>
+        </p>
         <aside class="notes">
-          Mostrar EN VIVO el dashboard de CloudWatch gen-AI observability con la traza de una invocación
-          real. El punto: "no es una caja negra" — ves cada decisión del agente, la latencia y los tokens.
-          Métricas batcheadas a 1 min; resource usage puede demorar hasta 60 min.
+          Tres cosas. UNO, qué se mide: AgentCore manda todo a CloudWatch solo — invocaciones, latencia,
+          TOKENS in/out, errores, y CPU/memoria. Más las trazas: ves qué tool llamó y por qué, no es caja
+          negra. DOS, cuánto cuesta: el costo real son los tokens de Claude — $3 el millón de entrada, $15
+          el de salida; una pregunta típica (contexto + respuesta) sale como UN CENTAVO. Los embeddings de
+          Titan son centavos por millón, despreciable. Y con prompt caching baja muchísimo. TRES, dónde:
+          CloudWatch GenAI Observability para uso y trazas, Cost Explorer para el dólar, y model invocation
+          logs si querés el prompt/respuesta completos. Si hay tiempo, abrir el dashboard EN VIVO.
         </aside>
       </section>
 
