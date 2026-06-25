@@ -109,8 +109,9 @@ def _scheduled_ingest():
 
 
 AR_TZ = datetime.timezone(datetime.timedelta(hours=-3))
-# IDs de fuente que mete el agente: "<canal>-<ts>" (ej C02EVF9H1MG-1782312916.900389)
-_SRC_RE = re.compile(r"\b([A-Z0-9]{8,})-(\d{6,}\.\d{3,})\b")
+# IDs de fuente que mete el agente: "<canal>-<ts>" (ej C02EVF9H1MG-1782312916.900389).
+# Comemos backticks alrededor: un link de Slack dentro de `code` no se vuelve clickeable.
+_SRC_RE = re.compile(r"`?\b([A-Z0-9]{8,})-(\d{6,}\.\d{3,})\b`?")
 
 
 def to_slack_mrkdwn(text):
