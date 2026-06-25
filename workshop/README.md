@@ -1,5 +1,9 @@
 # Workshop — Hablá con tu Slack
 
+> 🎤 Presentaciones en vivo: **[workshop](https://gastonzarate.github.io/agent-core-habla-con-tu-slack/presentation/)** ·
+> **[keynote](https://gastonzarate.github.io/agent-core-habla-con-tu-slack/presentation-keynote/)** ·
+> [⬅️ volver al README del repo](../README.md)
+
 Construí, paso a paso, un agente de IA serverless en AWS que ingesta mensajes
 de Slack a un Knowledge Base (S3 Vectors) y responde preguntas con citas.
 
