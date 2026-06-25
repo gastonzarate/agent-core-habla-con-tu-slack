@@ -12,7 +12,7 @@ NAME = "slackrag"           # prefijo de todos los recursos
 REGION = "us-east-1"
 MODEL_ID = "us.anthropic.claude-sonnet-4-6"
 EMBED_DIM = 1024            # Titan Text Embeddings v2
-INGEST_DAYS = 7             # ventana de ingesta: últimos N días de cada canal
+INGEST_DAYS = 180           # ventana de ingesta: últimos N días de cada canal (~6 meses)
 
 # Recursos (derivados de NAME)
 BUCKET = f"{NAME}-vectors"
