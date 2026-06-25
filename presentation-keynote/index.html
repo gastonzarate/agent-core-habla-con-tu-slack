@@ -49,6 +49,33 @@
           que abre los 3 pasos del próximo bloque.
         </aside>
       </section>
+      <!-- · MAPA DEL VIAJE -->
+      <section class="center" data-background-color="#0a0e17">
+        <span class="kicker">El recorrido de hoy</span>
+        <h2>🗺️ Cuatro <strong>paradas</strong></h2>
+        <div class="journey-map">
+          <div class="jm-stop"><span class="num">1</span><span class="txt"><b>Verlo funcionar</b><span>la demo y el panorama completo</span></span></div>
+          <div class="jm-stop"><span class="num">2</span><span class="txt"><b>Cómo la IA entiende</b><span>bases vectoriales y RAG</span></span></div>
+          <div class="jm-stop"><span class="num">3</span><span class="txt"><b>El agente y AgentCore</b><span>los componentes que lo potencian</span></span></div>
+          <div class="jm-stop"><span class="num">4</span><span class="txt"><b>A producción</b><span>visibilidad y costos reales</span></span></div>
+        </div>
+        <p class="muted center" style="font-size:0.6em; margin-top:0.5em;">
+          En cada parada te llevás una <strong>idea concreta</strong>.
+        </p>
+        <aside class="notes">
+          Marcá el recorrido: hoy no es una lista de features, es un viaje. Cuatro paradas. En cada una
+          van a entender algo que pueden contar mañana en su equipo. Arrancamos viéndolo funcionar.
+        </aside>
+      </section>
+
+      <!-- · PARADA 1 (divisor) -->
+      <section class="hero center" data-background-color="#0a0e17">
+        <span class="parada-num">Parada 1 · de 4</span>
+        <h1>Verlo <strong>funcionar</strong></h1>
+        <div class="parada-learn">💡 Qué hace el agente — y cómo se ve la arquitectura de punta a punta</div>
+        <aside class="notes">Divisor. "Primera parada: veámoslo en acción y entendamos el panorama."</aside>
+      </section>
+
       <!-- 2 · DEMO EN VIVO -->
       <section data-background-color="#0a0e17">
         <span class="kicker">Demo en vivo</span>
@@ -135,6 +162,17 @@
         </aside>
       </section>
 
+      <!-- · PARADA 2 (divisor) -->
+      <section class="hero center" data-background-color="#0a0e17">
+        <span class="parada-num">Parada 2 · de 4</span>
+        <h1>Cómo la IA <strong>entiende</strong></h1>
+        <div class="parada-learn">💡 Qué es un embedding y por qué la IA busca por <b>significado</b>, no por palabras</div>
+        <aside class="notes">
+          Segunda parada, la más "nueva" para una audiencia de negocio: cómo una IA entiende lo que lee.
+          Acá se llevan el concepto de embedding y búsqueda por significado.
+        </aside>
+      </section>
+
       <!-- 6 · CÓMO FUNCIONA UNA BASE VECTORIAL (3D) -->
       <section data-background-color="#0a0e17">
         <span class="kicker">Cómo funciona · base vectorial</span>
@@ -168,6 +206,17 @@
           embeddings con Titan (los vectores del espacio 3D) y los indexa en S3 Vectors. Recalcá: todo
           eso lo hace AWS solo; nosotros solo entregamos los documentos. Aclará que como los mensajes
           son cortos, muchas veces cada mensaje ya es un chunk — el chunking pesa en documentos largos.
+        </aside>
+      </section>
+
+      <!-- · PARADA 3 (divisor) -->
+      <section class="hero center" data-background-color="#0a0e17">
+        <span class="parada-num">Parada 3 · de 4</span>
+        <h1>El agente y <strong>AgentCore</strong></h1>
+        <div class="parada-learn">💡 Qué es un agente, qué es AgentCore y los <b>bloques</b> que le sumás</div>
+        <aside class="notes">
+          Tercera parada, el corazón: qué es un agente (razona y usa herramientas), qué es AgentCore
+          (la plataforma) y sus componentes modulares. Se llevan el modelo mental de "caja de herramientas".
         </aside>
       </section>
 
@@ -433,6 +482,17 @@ def invoke(payload):
         </aside>
       </section>
 
+      <!-- · PARADA 4 (divisor) -->
+      <section class="hero center" data-background-color="#0a0e17">
+        <span class="parada-num">Parada 4 · de 4</span>
+        <h1>A <strong>producción</strong></h1>
+        <div class="parada-learn">💡 Qué se mide, dónde verlo en AWS y cuánto <b>cuesta</b> de verdad</div>
+        <aside class="notes">
+          Última parada: lo que separa una demo de algo productivo — visibilidad (observability) y
+          costos reales. Se llevan que esto es barato (centavos por pregunta) y medible.
+        </aside>
+      </section>
+
       <!-- 12 · OBSERVABILITY -->
       <section data-background-color="#0a0e17">
         <span class="kicker">Producción · Observability</span>
@@ -583,6 +643,24 @@ def invoke(payload):
           que la entiende. Soporte, ventas, onboarding, operaciones, producto, legal — todos tienen
           conocimiento atrapado. Conectás la fuente que ya usan y listo. Esto abre la conversación: "¿cuál
           de estos casos les duele más a ustedes?".
+        </aside>
+      </section>
+
+      <!-- · LO QUE TE LLEVÁS (recap) -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Fin del recorrido · lo que te llevás</span>
+        <h2>5 ideas para <strong>llevarte hoy</strong></h2>
+        <ul class="pill-list" style="font-size:0.7em; margin-top:0.3em;">
+          <li>🔎 Una IA puede buscar por <b>significado</b>, no por palabras clave — eso son los <em>embeddings</em>.</li>
+          <li>📚 <b>RAG</b>: le das tu conocimiento como fuente y responde con <b>citas</b>, sin reentrenar nada.</li>
+          <li>🧩 <b>AgentCore</b> es la plataforma gestionada de AWS para llevar agentes a <b>producción</b>.</li>
+          <li>🧠🛡️ <b>Memory</b> y <b>Guardrails</b> se enchufan sin reescribir el agente — y hay más bloques.</li>
+          <li>💸 Pagás por <b>uso</b>: centavos por pregunta, <b>~$0 en reposo</b>. Medible en CloudWatch.</li>
+        </ul>
+        <aside class="notes">
+          Cerramos el recorrido recapitulando las paradas como ideas que se llevan. Si recuerdan solo
+          una: una IA que entiende el conocimiento de su equipo, en producción, por centavos. Y de acá
+          pasamos a qué viene y cómo lo hacemos juntos.
         </aside>
       </section>
 
