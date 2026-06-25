@@ -14,6 +14,7 @@ Ejecutar (desde workshop/):   python -m s5_deploy_runtime.main          (muestra
                               python -m s5_deploy_runtime.main --run    (crea el role y despliega)
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -165,6 +166,12 @@ if guardrail_id:  # attacheamos el guardrail del paso 4.1 al Runtime
 if memory_id:  # el agente desplegado recuerda por sesión
     deploy += ["--env", f"MEMORY_ID={memory_id}"]
     print(f"🧠 Memory {memory_id} → el agente recuerda por sesión")
+# Jira (opcional): si están en el entorno (.env), el agente gana las tools de Jira
+_jira_envs = ["JIRA_BASE_URL", "JIRA_EMAIL", "JIRA_API_TOKEN", "JIRA_PROJECT"]
+if os.environ.get("JIRA_BASE_URL") and os.environ.get("JIRA_API_TOKEN"):
+    for k in _jira_envs:
+        deploy += ["--env", f"{k}={os.environ.get(k, '')}"]
+    print("🎫 Jira configurado → el agente puede buscar/crear tickets")
 deploy += ["-auc"]
 
 print("🚀 Deploy a AgentCore Runtime (direct_code_deploy, sin Docker)\n")

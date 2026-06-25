@@ -1,6 +1,9 @@
 # agent/agent.py
+import base64
 import datetime
+import json
 import os
+import urllib.request
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from strands import Agent, tool
 from strands.models import BedrockModel
@@ -27,6 +30,11 @@ GUARDRAIL_VERSION = os.environ.get("GUARDRAIL_VERSION", "DRAFT")
 # server-side carga/guarda el historial acá adentro.
 MEMORY_ID = os.environ.get("MEMORY_ID", "")
 MEMORY_ACTOR = "slack-user"
+# Jira OPCIONAL: si está configurado, el agente gana las tools buscar_jira / crear_jira.
+JIRA_BASE_URL = os.environ.get("JIRA_BASE_URL", "")
+JIRA_EMAIL = os.environ.get("JIRA_EMAIL", "")
+JIRA_API_TOKEN = os.environ.get("JIRA_API_TOKEN", "")
+JIRA_PROJECT = os.environ.get("JIRA_PROJECT", "")
 
 app = BedrockAgentCoreApp()
 _model_kwargs = dict(model_id=MODEL_ID, region_name=REGION, temperature=0.2)
@@ -87,6 +95,55 @@ def ingest_slack(channel: str) -> str:
     return f"Indexé {n} mensajes del canal {channel}."
 
 
+def _jira(method, path, body=None):
+    """Llamada a la REST API de Jira Cloud (Basic auth: email + API token)."""
+    auth = base64.b64encode(f"{JIRA_EMAIL}:{JIRA_API_TOKEN}".encode()).decode()
+    data = json.dumps(body).encode() if body is not None else None
+    req = urllib.request.Request(
+        JIRA_BASE_URL.rstrip("/") + path, data=data, method=method,
+        headers={"Authorization": "Basic " + auth, "Accept": "application/json",
+                 "Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return json.loads(r.read().decode() or "{}")
+
+
+@tool
+def buscar_jira(consulta: str) -> str:
+    """Busca tickets en Jira por texto. Devuelve clave, título, estado y responsable."""
+    jql = f'text ~ "{consulta}" ORDER BY updated DESC'
+    try:
+        res = _jira("POST", "/rest/api/3/search/jql",
+                    {"jql": jql, "maxResults": 8, "fields": ["summary", "status", "assignee"]})
+    except Exception as e:  # noqa: BLE001
+        return f"No pude buscar en Jira: {e}"
+    issues = res.get("issues", [])
+    if not issues:
+        return "No encontré tickets para esa búsqueda."
+    lines = []
+    for it in issues:
+        f = it.get("fields", {})
+        estado = (f.get("status") or {}).get("name", "?")
+        asignado = (f.get("assignee") or {}).get("displayName", "sin asignar")
+        lines.append(f"{it['key']}: {f.get('summary', '')} [{estado} · {asignado}]")
+    return "\n".join(lines)
+
+
+@tool
+def crear_jira(resumen: str, descripcion: str = "") -> str:
+    """Crea un ticket (tipo Task) en Jira. resumen = título; descripcion es opcional."""
+    adf = {"type": "doc", "version": 1, "content": [
+        {"type": "paragraph", "content": [{"type": "text", "text": descripcion or resumen}]}]}
+    body = {"fields": {"project": {"key": JIRA_PROJECT}, "summary": resumen,
+                       "description": adf, "issuetype": {"name": "Task"}}}
+    try:
+        res = _jira("POST", "/rest/api/3/issue", body)
+    except Exception as e:  # noqa: BLE001
+        return f"No pude crear el ticket: {e}"
+    key = res.get("key", "?")
+    return f"Creé el ticket {key}: {resumen} ({JIRA_BASE_URL.rstrip('/')}/browse/{key})"
+
+
 # Argentina (UTC-3) para que "hoy/ayer" tenga sentido local
 AR_TZ = datetime.timezone(datetime.timedelta(hours=-3))
 _DIAS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
@@ -98,6 +155,10 @@ BASE_SYSTEM = (
     "usala para resolver preguntas temporales como 'hoy', 'ayer' o 'esta semana'. "
     "Usá ingest_slack solo si te piden indexar un canal. Respondé en español, breve y preciso."
 )
+JIRA_SYSTEM = (
+    " Tenés acceso a Jira: usá buscar_jira para consultar tickets y crear_jira para abrir uno. "
+    "Antes de CREAR un ticket, confirmá con el usuario el título; nunca lo crees sin que lo pida."
+)
 
 
 def _today_context():
@@ -105,7 +166,12 @@ def _today_context():
     return f"\nFecha y hora actuales: {_DIAS[now.weekday()]} {now.strftime('%Y-%m-%d %H:%M')} (Argentina)."
 
 
-_agent = Agent(model=_model, tools=[ask_kb, ingest_slack], system_prompt=BASE_SYSTEM)
+_tools = [ask_kb, ingest_slack]
+if JIRA_BASE_URL and JIRA_API_TOKEN:
+    _tools += [buscar_jira, crear_jira]
+    BASE_SYSTEM += JIRA_SYSTEM
+
+_agent = Agent(model=_model, tools=_tools, system_prompt=BASE_SYSTEM)
 
 
 def _extract_text(message):
