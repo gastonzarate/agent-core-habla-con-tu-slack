@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hablá con tu Slack — Craftech · AWS GenAI</title>
+  <style>
+    :root { --bg:#0a0e17; --card:#141a26; --border:#243044; --fg:#e8edf5; --muted:#8a98ad; --accent:#38e0c6; --accent2:#7c9cf5; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6vh 24px; }
+    .kicker { color:var(--accent); font-weight:800; letter-spacing:.22em; text-transform:uppercase; font-size:.8rem; }
+    h1 { font-size:clamp(2rem,5vw,3.2rem); margin:.3em 0 .1em; text-align:center; line-height:1.1; }
+    h1 strong { color:var(--accent); }
+    .sub { color:var(--muted); text-align:center; max-width:30em; margin:0 auto 2.2em; font-size:1.05rem; }
+    .cards { display:flex; gap:24px; flex-wrap:wrap; justify-content:center; width:100%; max-width:880px; }
+    a.card { flex:1 1 320px; max-width:420px; text-decoration:none; color:inherit;
+      background:var(--card); border:1px solid var(--border); border-radius:18px; padding:28px 26px;
+      transition:transform .15s, border-color .15s, box-shadow .15s; }
+    a.card:hover { transform:translateY(-4px); border-color:var(--accent); box-shadow:0 20px 50px rgba(56,224,198,.12); }
+    .card .tag { font-size:.7rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+      color:#06231e; background:var(--accent); border-radius:6px; padding:2px 9px; }
+    .card.b .tag { background:var(--accent2); }
+    .card h2 { margin:.6em 0 .2em; font-size:1.45rem; }
+    .card p { color:var(--muted); font-size:.92rem; line-height:1.5; margin:0 0 1em; }
+    .card .go { color:var(--accent); font-weight:700; font-size:.95rem; }
+    .card.b .go { color:var(--accent2); }
+    .foot { color:var(--muted); font-size:.85rem; margin-top:2.4em; }
+    .foot a { color:var(--accent2); text-decoration:none; }
+    .brand { position:fixed; bottom:18px; right:24px; color:var(--muted); font-size:.8rem;
+      letter-spacing:.2em; text-transform:uppercase; font-weight:700; }
+    .brand b { color:var(--accent); }
+  </style>
+</head>
+<body>
+  <span class="kicker">Craftech · AWS GenAI</span>
+  <h1>Hablá con tu <strong>Slack</strong>,<br>Teams o lo que uses</h1>
+  <p class="sub">Agentes de IA serverless en AWS con Amazon Bedrock AgentCore. Elegí una presentación:</p>
+
+  <div class="cards">
+    <a class="card a" href="presentation/">
+      <span class="tag">Workshop · hands-on</span>
+      <h2>🛠️ Construirlo, paso a paso</h2>
+      <p>El recorrido técnico: base vectorial, Knowledge Base, el agente, deploy a AgentCore, memoria y guardrails. Con código y comandos para seguir en vivo.</p>
+      <span class="go">Abrir presentación →</span>
+    </a>
+    <a class="card b" href="presentation-keynote/">
+      <span class="tag">Keynote · negocio</span>
+      <h2>🚀 Por qué importa</h2>
+      <p>Un recorrido guiado por AgentCore y las bases vectoriales, enfocado en valor y casos de uso. Para decisores: qué es, cuánto cuesta y qué te llevás.</p>
+      <span class="go">Abrir presentación →</span>
+    </a>
+  </div>
+
+  <p class="foot">Código y workshop en
+    <a href="https://github.com/gastonzarate/agent-core-habla-con-tu-slack">GitHub</a>.
+    Tip: con la presentación abierta, apretá <b>F</b> para pantalla completa.</p>
+
+  <div class="brand"><b>craftech</b> · aws genai</div>
+</body>
+</html>
