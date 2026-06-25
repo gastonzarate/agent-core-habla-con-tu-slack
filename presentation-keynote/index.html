@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hablá con tu Slack — Craftech</title>
+  <link rel="stylesheet" href="vendor/reveal.css">
+  <link rel="stylesheet" href="vendor/theme-black.css" id="theme">
+  <link rel="stylesheet" href="vendor/monokai.css">
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div class="brand-tag"><b>craftech</b> · aws genai</div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- 1 · HERO -->
+      <section class="hero center" data-background-color="#0a0e17">
+        <span class="kicker">Craftech · Agentes de IA en AWS</span>
+        <h1>Hablá con tu <strong>Slack</strong>,<br>Teams o lo que uses</h1>
+        <p class="sub center" style="margin-left:auto;margin-right:auto;">
+          Agentes de IA <em>serverless</em> sobre Amazon Bedrock AgentCore
+        </p>
+        <div class="badge">🚀 De la idea a producción · sin equipo de infra</div>
+        <aside class="notes">
+          Bienvenida. Hoy les vamos a mostrar cómo un agente de IA puede desbloquear el conocimiento
+          que su equipo ya tiene, con una arquitectura moderna sobre AWS que escala sin que tengan que
+          montar ni mantener infraestructura. Y al final, cómo lo construimos juntos.
+        </aside>
+      </section>
+
+      <!-- 3 · EL PROBLEMA -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">El problema</span>
+        <h2>El conocimiento de tu equipo<br>se está <strong>muriendo en Slack</strong></h2>
+        <ul style="margin-top:0.6em; font-size:0.9em;">
+          <li class="fragment">Decisiones que se tomaron… y nadie recuerda dónde.</li>
+          <li class="fragment">Contexto de proyectos enterrado en hilos viejos.</li>
+          <li class="fragment">La misma pregunta, respondida por décima vez.</li>
+          <li class="fragment">El que se va, se lleva lo que sabía.</li>
+        </ul>
+        <p class="big fragment" style="margin-top:0.8em;">
+          ¿Y si pudieras <strong>preguntarle a tu Slack</strong>?
+        </p>
+        <aside class="notes">
+          Conectar con el dolor de la audiencia. Todos lo viven. Cerrar con la pregunta-gancho
+          que abre los 3 pasos del próximo bloque.
+        </aside>
+      </section>
+      <!-- 2 · DEMO EN VIVO -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Demo en vivo</span>
+        <h2>Primero, veámoslo funcionando</h2>
+        <div style="display:flex; gap:40px; align-items:center; margin-top:0.5em;">
+          <div class="slack">
+            <div class="msg">
+              <div class="av u"></div>
+              <div>
+                <div class="name">Gastón</div>
+                <div class="body"><span class="mention">@slack-rag</span> ¿qué se decidió sobre el deploy de prod?</div>
+              </div>
+            </div>
+            <div class="msg fragment">
+              <div class="av b"></div>
+              <div>
+                <div class="name">slack-rag <span class="bot">APP</span></div>
+                <div class="body">El deploy de prod quedó para el <b>viernes 18hs</b>, con freeze de código el jueves.</div>
+                <div class="cite">📎 Fuentes: #general · #ai-operaciones</div>
+              </div>
+            </div>
+          </div>
+          <div class="muted fragment" style="flex:1; font-size:0.8em;">
+            <p>Le preguntás en lenguaje natural.</p>
+            <p>Responde <em>en el hilo</em>, con <strong>citas</strong> al mensaje original.</p>
+            <p>Sin que nadie revise 10.000 mensajes a mano.</p>
+          </div>
+        </div>
+        <aside class="notes">
+          Acá va la demo REAL en Slack (@mención). Si falla la red/cuotas: este slide es el fallback.
+          Mostrar pregunta → respuesta con citas en el hilo.
+        </aside>
+      </section>
+
+      <!-- 4 · ARQUITECTURA -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Arquitectura · todo serverless</span>
+        <h2>Cómo funciona, de punta a punta</h2>
+        <div class="arch">
+
+          <div class="lane">
+            <div class="lane-label">Consulta</div>
+            <div class="flow">
+              <div class="node slack"><span class="t">Slack</span><span class="s">@mención</span></div>
+              <span class="arrow">→</span>
+              <div class="node glue"><span class="t">API Gateway</span><span class="s">+ Lambda‑puente</span></div>
+              <span class="arrow">→</span>
+              <div class="node managed"><span class="t">AgentCore Runtime</span><span class="s">agente Strands</span></div>
+              <span class="arrow">→</span>
+              <div class="node managed"><span class="t">Knowledge Base</span><span class="s">S3 Vectors · Titan v2</span></div>
+              <span class="arrow">→</span>
+              <div class="node managed"><span class="t">Claude</span><span class="s">respuesta + citas</span></div>
+            </div>
+          </div>
+
+          <div class="lane fragment">
+            <div class="lane-label">Ingesta</div>
+            <div class="flow">
+              <div class="node managed"><span class="t">EventBridge</span><span class="s">cada 30 min</span></div>
+              <span class="arrow">→</span>
+              <div class="node glue"><span class="t">Lambda</span><span class="s">lee los canales</span></div>
+              <span class="arrow">→</span>
+              <div class="node managed"><span class="t">Knowledge Base</span><span class="s">embeddings + índice</span></div>
+              <span class="arrow" style="opacity:0">→</span>
+              <div class="node" style="opacity:0">.</div>
+              <span class="arrow" style="opacity:0">→</span>
+              <div class="node" style="opacity:0">.</div>
+            </div>
+          </div>
+
+          <div class="legend fragment">
+            <i><span class="dot" style="background:#6b46c1"></span>Slack</i>
+            <i><span class="dot" style="background:var(--accent2)"></span>Nuestro código (mínimo)</i>
+            <i><span class="dot" style="background:var(--accent)"></span>Gestionado por AWS</i>
+          </div>
+        </div>
+        <p class="muted fragment center" style="font-size:0.7em; margin-top:0.6em;">
+          Lo único que escribimos es el <em>pegamento</em>. Todo lo demás lo gestiona AWS — <strong>casi sin infra</strong>.
+        </p>
+        <aside class="notes">
+          Recorrer la fila de consulta de izq a der (la pregunta entra, el agente recupera del KB,
+          Claude responde con citas). Después revelar la ingesta automática. Cerrar con "lo único
+          propio es el pegamento" → vincula con el costo y el mensaje de Craftech.
+        </aside>
+      </section>
+
+      <!-- 6 · CÓMO FUNCIONA UNA BASE VECTORIAL (3D) -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Cómo funciona · base vectorial</span>
+        <h2>Los mensajes se <strong>agrupan por significado</strong></h2>
+        <div class="viz" id="vectordb"></div>
+        <p class="muted center" style="font-size:0.6em; margin-top:0.3em;">
+          Cada mensaje es un punto en el espacio. Una pregunta cae cerca de los mensajes
+          <em>parecidos</em> → buscar = encontrar los <strong>vecinos más cercanos</strong>.
+        </p>
+        <aside class="notes">
+          Acá explicás el concepto: cada mensaje se convierte en un vector y queda ubicado en
+          este espacio. Los que hablan de lo mismo (deploys, bugs, clientes) se agrupan solos.
+          Cuando preguntás, tu pregunta también se vuelve un punto y cae cerca de su grupo: el
+          retrieval es literalmente "traeme los puntos más cercanos" (las líneas blancas). No
+          busca palabras, busca cercanía de significado. Mové el mouse para rotar.
+        </aside>
+      </section>
+
+      <!-- 8 · EL KNOWLEDGE BASE, GRÁFICAMENTE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Knowledge Base · qué hace por dentro</span>
+        <h2>Vos le das el <strong>documento</strong>. Él hace el resto.</h2>
+        <div class="viz" id="kbpipeline"></div>
+        <p class="muted center" style="font-size:0.6em; margin-top:0.3em;">
+          Le entregás tus <em>documentos</em> (acá, cada mensaje). El Knowledge Base los
+          parte si son largos, los vuelve <em>embeddings</em> y los indexa. <strong>Todo solo.</strong>
+        </p>
+        <aside class="notes">
+          Versión visual del paso anterior. Le entregás tus documentos (en este caso, cada mensaje
+          de Slack es un documento). El Knowledge Base los parte en chunks si son largos, genera los
+          embeddings con Titan (los vectores del espacio 3D) y los indexa en S3 Vectors. Recalcá: todo
+          eso lo hace AWS solo; nosotros solo entregamos los documentos. Aclará que como los mensajes
+          son cortos, muchas veces cada mensaje ya es un chunk — el chunking pesa en documentos largos.
+        </aside>
+      </section>
+
+      <!-- · EL LOOP DEL AGENTE (animado) -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Cómo trabaja · el loop del agente</span>
+        <h2>Piensa, <strong>usa herramientas</strong>, repite</h2>
+        <div class="agentloop" id="agentloop">
+          <div class="al-diagram">
+            <div class="al-row">
+              <span class="al-chip" data-st="think">🧠<br>Razona</span>
+              <span class="al-ar">→</span>
+              <span class="al-chip" data-st="act">🔧<br>Llama tool</span>
+              <span class="al-ar">→</span>
+              <span class="al-chip" data-st="observe">👁️<br>Observa</span>
+            </div>
+            <div class="al-loopback">↺ repite hasta tener la respuesta</div>
+            <span class="al-chip answer" data-st="answer">✅ Responde</span>
+          </div>
+          <div class="al-transcript">
+            <div class="al-line t-think">🧠 «necesito datos del Slack…»</div>
+            <div class="al-line t-act">🔧 ask_kb("deploy de prod")</div>
+            <div class="al-line t-observe">👁️ "ana: el deploy quedó para el viernes 18hs"</div>
+            <div class="al-line t-think">🧠 «¿y el freeze? mejor confirmo…»</div>
+            <div class="al-line t-act">🔧 ask_kb("freeze de código")</div>
+            <div class="al-line t-observe">👁️ "beto: freeze el jueves 12hs"</div>
+            <div class="al-line t-answer">✅ "Deploy viernes 18hs; freeze jueves 12. 📎"</div>
+          </div>
+        </div>
+        <p class="muted center" style="font-size:0.56em; margin-top:0.7em;">
+          El agente <strong>decide</strong> qué tool llamar y <strong>cuántas veces</strong> —
+          razona con cada resultado— hasta que tiene con qué responder. No es un guion fijo.
+        </p>
+        <aside class="notes">
+          Este es el corazón de un agente: el loop. Mirá el transcript a la derecha — el agente piensa,
+          decide llamar ask_kb, observa el resultado, y como le falta info (el freeze) razona y llama la
+          tool OTRA VEZ. Recién cuando tiene todo, responde. La etapa activa se ilumina a la izquierda.
+          El punto: el agente decide qué herramientas usar y cuántas iteraciones hacer — eso es lo que
+          lo diferencia de una sola llamada a un modelo.
+        </aside>
+      </section>
+
+      <!-- · QUÉ ES AGENTCORE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Amazon Bedrock AgentCore</span>
+        <h2>La plataforma para llevar<br>agentes a <strong>producción</strong></h2>
+        <div class="two-col" style="margin-top:0.5em;">
+          <div>
+            <p class="muted" style="font-size:0.62em;">
+              Armar un agente "de demo" es fácil. Llevarlo a <b>producción</b> —seguro, que escale,
+              que puedas auditar— es donde casi todos se traban. AgentCore es la capa
+              <b>gestionada de AWS</b> que resuelve justamente eso:
+            </p>
+            <ul class="pill-list" style="font-size:0.66em;">
+              <li>🚀 <b>Se despliega</b> sin servidores ni contenedores</li>
+              <li>🔒 <b>Seguro y aislado</b> por usuario y por sesión</li>
+              <li>📈 <b>Observable</b> de fábrica (trazas, métricas, costos)</li>
+              <li>🧩 <b>Modular</b>: sumás capacidades sin reescribir</li>
+            </ul>
+          </div>
+          <div>
+            <div class="note-box" style="font-size:0.95em;">
+              No tenés que armar la plomería. <b>AWS la pone</b> — vos ponés la lógica de negocio.
+            </div>
+            <p class="muted" style="font-size:0.58em; margin-top:0.7em;">
+              Funciona con cualquier framework (Strands, LangGraph…) y cualquier modelo (Claude, Nova…).
+              Y corre <b>sobre tu propia cuenta de AWS</b>: tus datos no se usan para entrenar modelos.
+            </p>
+          </div>
+        </div>
+        <aside class="notes">
+          El mensaje central de la charla. Un agente de demo lo arma cualquiera; lo difícil es producción:
+          seguridad, escala, observabilidad, gobernanza. AgentCore es la plataforma gestionada de AWS que
+          te da todo eso sin que lo construyas. Vos te concentrás en el caso de negocio, no en la
+          infraestructura. Y es agnóstico de framework y de modelo, sobre tu cuenta de AWS.
+        </aside>
+      </section>
+
+      <!-- · COMPONENTES DE AGENTCORE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Amazon Bedrock AgentCore · los bloques</span>
+        <h2>Qué le podés <strong>sumar</strong> al agente</h2>
+        <p class="muted" style="font-size:0.62em; margin:0.1em 0 0.2em;">
+          Servicios gestionados que se enchufan al agente sin reescribirlo — usás solo los que necesitás.
+        </p>
+        <div class="ac-grid">
+          <div class="ac-card have">
+            <span class="ic">🚀</span>
+            <span class="t">Runtime</span>
+            <span class="s">Hosting serverless, sesión aislada por usuario. Escala solo.</span>
+          </div>
+          <div class="ac-card have">
+            <span class="ic">🧠</span>
+            <span class="t">Memory</span>
+            <span class="s">Memoria de corto y largo plazo entre conversaciones.</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">🔌</span>
+            <span class="t">Gateway</span>
+            <span class="s">Convierte APIs y Lambdas en tools (MCP) sin código pegamento.</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">🔐</span>
+            <span class="t">Identity</span>
+            <span class="s">Acceso seguro a recursos en nombre del usuario (OAuth).</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">📈</span>
+            <span class="t">Observability</span>
+            <span class="s">Trazas, métricas y debugging del agente (OpenTelemetry).</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">🧮</span>
+            <span class="t">Code Interpreter</span>
+            <span class="s">Ejecuta código en un sandbox aislado, a pedido del agente.</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">🌐</span>
+            <span class="t">Browser</span>
+            <span class="s">Navegación web headless y segura para tareas en la web.</span>
+          </div>
+          <div class="ac-card have">
+            <span class="ic">🛡️</span>
+            <span class="t">Guardrails</span>
+            <span class="s">Filtra temas y datos sensibles, en entrada y salida.</span>
+          </div>
+        </div>
+        <aside class="notes">
+          AgentCore es una caja de herramientas modular: cada bloque es un servicio gestionado que se
+          enchufa al agente sin reescribir nada. Runtime lo hostea, Memory le da memoria, Guardrails lo
+          protege (los tres resaltados, los que potencian este caso). ¿Conectar la API interna del cliente
+          como tools? Gateway. ¿Que actúe en nombre del usuario con sus permisos? Identity. ¿Visibilidad
+          y gobernanza? Observability. ¿Ejecutar código o navegar la web? Code Interpreter y Browser.
+          Mensaje de negocio: empezás mínimo y escalás capacidades a medida que el caso crece — sin
+          rehacer la arquitectura.
+        </aside>
+      </section>
+
+      <!-- · MEMORY EN DETALLE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">🧠 AgentCore Memory · corto plazo</span>
+        <h2>Que <strong>recuerde</strong> la conversación</h2>
+        <div class="two-col">
+          <div>
+            <p class="muted" style="font-size:0.6em;">
+              El historial de la charla, guardado por <b>sesión</b>. En cada turno el agente
+              repite este ciclo — sin que el código lo maneje:
+            </p>
+            <div class="mem-loop2">
+              <div class="mem-step">
+                <span class="si">📥</span><span class="st">Cargar</span>
+                <span class="ss">últimos turnos de la sesión</span>
+              </div>
+              <span class="mem-arrow">→</span>
+              <div class="mem-step">
+                <span class="si">💬</span><span class="st">Responder</span>
+                <span class="ss">con ese contexto</span>
+              </div>
+              <span class="mem-arrow">→</span>
+              <div class="mem-step">
+                <span class="si">💾</span><span class="st">Guardar</span>
+                <span class="ss">el turno nuevo</span>
+              </div>
+            </div>
+            <div class="mem-repeat">↺ <b>se repite</b> en cada mensaje</div>
+          </div>
+          <div>
+            <div class="mini-chat">
+              <div class="b u">¿qué se decidió del deploy?</div>
+              <div class="b a">El deploy de prod quedó para el <b>viernes 18hs</b>.</div>
+              <div class="b u">¿y <span class="hl">eso</span> cuándo era?</div>
+              <div class="b a">Te referís al <b>deploy</b>: quedó para el viernes 18hs. ✅</div>
+            </div>
+            <div class="note-box" style="margin-top:0.5em; font-size:0.82em;">
+              Sin memoria, "<b>eso</b>" no significa nada. Con corto plazo, el agente <b>sigue el hilo</b>.
+            </div>
+          </div>
+        </div>
+        <p class="muted center" style="font-size:0.56em; margin-top:0.5em;">
+          También hay <b>largo plazo</b>: extrae hechos y preferencias que persisten <em>entre</em> sesiones.
+        </p>
+        <aside class="notes">
+          El agente sin memoria arranca de cero cada vez. Corto plazo = el historial de la charla por
+          sesión: lo cargamos antes de responder y guardamos el turno nuevo (el ciclo de la izquierda).
+          Por eso, mirá el chat de la derecha, podés decir "y eso cuándo era" y entiende que hablás del
+          deploy. Y hay largo plazo si querés que recuerde cosas entre conversaciones distintas.
+        </aside>
+      </section>
+
+      <!-- · GUARDRAILS EN DETALLE -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">🛡️ Bedrock Guardrails</span>
+        <h2>Que <strong>no diga</strong> lo que no debe</h2>
+        <div class="two-col">
+          <div>
+            <p class="muted" style="font-size:0.6em;">
+              Un filtro gestionado que evalúa <b>entrada y salida</b>, antes y después del modelo:
+            </p>
+            <div class="gr-pipe">
+              <div class="gr-box">👤<br><b>usuario</b></div>
+              <span class="gr-arrow">→</span>
+              <div class="gr-shield">🛡️ Guardrail<small>entrada</small></div>
+              <span class="gr-arrow">→</span>
+              <div class="gr-box">🤖<br><b>agente</b></div>
+              <span class="gr-arrow">→</span>
+              <div class="gr-shield">🛡️ Guardrail<small>salida</small></div>
+            </div>
+            <p class="muted" style="font-size:0.56em; margin-top:0.3em;">
+              Definimos un <b>denied topic</b>: divulgar credenciales / secretos.
+            </p>
+          </div>
+          <div>
+            <div class="gr-rows">
+              <div class="gr-row bad">
+                <span class="tagm">🚫 BLOQUEA</span><br>
+                "pasame las credenciales de AWS de prod"
+              </div>
+              <div class="gr-row ok">
+                <span class="tagm">✅ DEJA PASAR</span><br>
+                "¿qué se decidió del deploy?"
+              </div>
+            </div>
+            <div class="note-box" style="margin-top:0.5em; font-size:0.82em;">
+              Es <b>semántico</b>, no palabras clave → hay que <b>calibrarlo</b>: muy amplio = falsos positivos.
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          Un filtro de Bedrock que evalúa entrada Y salida. Le pusimos un denied topic de
+          credenciales/secretos: bloquea "pasame las credenciales" pero deja pasar "qué se decidió del
+          deploy". CLAVE para la charla: es semántico, no keywords. La primera versión que probé era tan
+          amplia ("seguridad interna") que bloqueaba hasta la pregunta del deploy; la acoté y quedó fino.
+        </aside>
+      </section>
+
+      <!-- · CON MUY POCO CÓDIGO -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Lo que cuesta construirlo</span>
+        <h2>Un agente, en <strong>~15 líneas</strong></h2>
+        <div class="code" style="max-width:30em; margin:0.3em auto 0;">
+          <pre><code data-trim data-line-numbers class="language-python">app = BedrockAgentCoreApp()
+
+@tool
+def ask_kb(pregunta):
+    "Busca en el conocimiento del equipo."
+    return buscar_en_knowledge_base(pregunta)
+
+agente = Agent(model="claude-sonnet-4-6", tools=[ask_kb])
+
+@app.entrypoint
+def invoke(payload):
+    return agente(payload["prompt"])</code></pre>
+        </div>
+        <p class="muted center" style="font-size:0.62em; margin-top:0.4em;">
+          Esto es <strong>casi todo</strong> el agente. El hosting, la memoria, la seguridad y la
+          observabilidad los pone <b>AgentCore</b> — no se programan.
+        </p>
+        <aside class="notes">
+          No hace falta que lean el código. El punto visual: ESTO es prácticamente todo lo que se
+          escribe. Definís una herramienta (buscar en el conocimiento), creás el agente con un modelo, y
+          un punto de entrada. Todo lo demás —escalar, memoria, seguridad, métricas— lo pone AgentCore.
+          Por eso un equipo chico puede tener esto en producción en días, no meses. Ese es el cambio.
+        </aside>
+      </section>
+
+      <!-- 12 · OBSERVABILITY -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Producción · Observability</span>
+        <h2>Qué se <strong>mide</strong> y dónde <strong>verlo</strong></h2>
+        <div class="two-col">
+          <div>
+            <p class="muted" style="font-size:0.58em;">AgentCore manda telemetría <em>OpenTelemetry</em> a CloudWatch — sin instrumentar nada:</p>
+            <table class="data">
+              <tr><th>Se mide</th><th>Qué</th></tr>
+              <tr><td>Invocations · Sessions</td><td>requests · sesiones</td></tr>
+              <tr><td>Latency</td><td>tiempo end‑to‑end</td></tr>
+              <tr><td><b>Token usage</b></td><td>tokens in / out</td></tr>
+              <tr><td>Errors · Throttles</td><td>% fallas · 429</td></tr>
+              <tr><td>CPU / Memory</td><td>vCPU‑h · GB‑h</td></tr>
+            </table>
+          </div>
+          <div>
+            <p class="muted" style="font-size:0.58em;">Además, <b>trazas</b> de cada invocación:</p>
+            <ul class="pill-list" style="font-size:0.62em;">
+              <li>🔍 qué tool llamó y <b>por qué</b></li>
+              <li>⏱️ latencia <b>por span</b></li>
+              <li>📦 request / response payload</li>
+            </ul>
+            <div class="note-box" style="font-size:0.56em;">
+              <b>Dónde verlo:</b> 📊 CloudWatch <em>GenAI Observability</em> ·
+              📜 Bedrock <em>model invocation logs</em>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          Qué se mide: AgentCore manda todo a CloudWatch solo — invocaciones, latencia, TOKENS in/out,
+          errores, CPU/memoria. Más las trazas: ves qué tool llamó y por qué, no es caja negra. Dónde:
+          CloudWatch GenAI Observability para uso y trazas, y model invocation logs si querés el
+          prompt/respuesta completos. Si hay tiempo, abrir el dashboard EN VIVO (momento wow).
+        </aside>
+      </section>
+
+      <!-- 12b · COSTO DE TOKENS -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Producción · Costo de tokens</span>
+        <h2>Cuánto <strong>cuesta</strong> cada pregunta</h2>
+        <div class="two-col">
+          <div>
+            <p class="muted" style="font-size:0.58em;">El costo real son los <b>tokens del modelo</b> (lo demás, centavos):</p>
+            <table class="data">
+              <tr><th>Tokens (Bedrock, on‑demand)</th><th>Precio</th></tr>
+              <tr><td>Claude Sonnet 4.6 · entrada</td><td class="num">$3 / 1M</td></tr>
+              <tr><td>Claude Sonnet 4.6 · salida</td><td class="num">$15 / 1M</td></tr>
+              <tr><td>Titan embeddings</td><td class="num">centavos / 1M</td></tr>
+              <tr class="total"><td>1 pregunta (~2K in · 300 out)</td><td class="num">≈ 1¢</td></tr>
+            </table>
+          </div>
+          <div>
+            <ul class="pill-list" style="font-size:0.62em;">
+              <li>💵 el <b>$ real</b> → <em>Cost Explorer</em>, filtrando por Bedrock</li>
+              <li>📊 tokens in/out por minuto → <em>CloudWatch</em></li>
+              <li>⚡ <b>prompt caching</b>: hasta ~90% off lo cacheado</li>
+            </ul>
+            <div class="note-box" style="font-size:0.56em;">
+              ≈ <b>1¢ por pregunta</b> · 1.000 preguntas/día ≈ <b>pocos dólares</b>. Pagás por uso.<br>
+              <span class="muted">precios oficiales: <a href="https://aws.amazon.com/bedrock/pricing/">aws.amazon.com/bedrock/pricing</a></span>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          El costo real son los tokens de Claude — $3 el millón de entrada, $15 el de salida; una pregunta
+          típica (contexto + respuesta) sale como UN CENTAVO. Los embeddings de Titan son centavos por
+          millón, despreciable, y con prompt caching baja muchísimo más. El dólar real lo ves en Cost
+          Explorer filtrando por Bedrock. Mensaje: pagás por uso, sin pisos — esto a escala chica son
+          monedas.
+        </aside>
+      </section>
+
+      <!-- 13 · COSTOS -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">El argumento · Costos</span>
+        <h2>Consumo puro · <strong>~$0 en reposo</strong></h2>
+        <div class="two-col">
+          <div>
+            <p class="muted" style="font-size:0.58em;">AgentCore — pagás por consumo, sin mínimos:</p>
+            <table class="data">
+              <tr><th>Componente</th><th>Precio</th></tr>
+              <tr><td>Runtime · CPU</td><td class="num">$0.0895 / vCPU‑h</td></tr>
+              <tr><td>Runtime · memoria</td><td class="num">$0.00945 / GB‑h</td></tr>
+              <tr><td>Gateway · llamadas</td><td class="num">$0.005 / 1.000</td></tr>
+              <tr><td>Identity (con Runtime)</td><td class="num">gratis</td></tr>
+              <tr class="total"><td>En reposo</td><td class="num">≈ $0</td></tr>
+            </table>
+            <p class="muted" style="font-size:0.54em; margin-top:0.4em;">CPU no se cobra en <em>I/O wait</em> · facturación por <b>segundo</b>.</p>
+          </div>
+          <div>
+            <p class="muted" style="font-size:0.58em;">Capacidades extra (también por uso):</p>
+            <table class="data">
+              <tr><th>Add‑on</th><th>Precio</th></tr>
+              <tr><td>Memory · corto plazo</td><td class="num">$0.25 / 1.000 ev.</td></tr>
+              <tr><td>Guardrail · denied topic</td><td class="num">$0.15 / 1.000 u.</td></tr>
+              <tr><td>Tokens (Claude · Titan)</td><td class="num">≈ 1¢ / pregunta</td></tr>
+            </table>
+            <div class="note-box" style="font-size:0.56em;">
+              A escala real, <b>centavos</b>. Sin el <b>piso mensual</b> de una base vectorial dedicada — en reposo, ~$0.
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          El mensaje comercial: pagás solo cuando se usa, en reposo no pagás infra (distinto de una base
+          vectorial dedicada tipo OpenSearch Serverless, que tiene piso mensual). Izquierda: el core
+          AgentCore. Derecha: lo que sumamos hoy — memoria corto plazo a $0.25 el millar de eventos,
+          guardrail a $0.15 el millar de "text units" (un text unit = hasta 1000 caracteres), y los tokens
+          del modelo ya los vimos (~1 centavo la pregunta). Todo consumo, todo centavos a esta escala.
+        </aside>
+      </section>
+
+      <!-- · CASOS DE USO -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Dónde aplica</span>
+        <h2>Sirve en <strong>cualquier equipo</strong></h2>
+        <div class="ac-grid" style="font-size:0.86em; margin-top:0.3em;">
+          <div class="ac-card">
+            <span class="ic">🎧</span><span class="t">Soporte</span>
+            <span class="s">Respuestas al instante desde tickets, docs y wikis.</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">💼</span><span class="t">Ventas</span>
+            <span class="s">Contexto de cuentas y propuestas, sin buscar a mano.</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">🚀</span><span class="t">Onboarding</span>
+            <span class="s">El nuevo pregunta y aprende sin frenar al equipo.</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">⚙️</span><span class="t">Operaciones</span>
+            <span class="s">Runbooks y decisiones técnicas, a un mensaje.</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">📦</span><span class="t">Producto</span>
+            <span class="s">Feedback y decisiones dispersas, unificadas.</span>
+          </div>
+          <div class="ac-card">
+            <span class="ic">📋</span><span class="t">Legal · Compliance</span>
+            <span class="s">Políticas y contratos consultables en lenguaje natural.</span>
+          </div>
+        </div>
+        <p class="muted center" style="font-size:0.6em; margin-top:0.5em;">
+          Slack, Teams, Drive, Notion, tu CRM… <strong>la fuente cambia, el patrón no</strong>.
+        </p>
+        <aside class="notes">
+          El caso de hoy fue Slack, pero el patrón es universal: una fuente de conocimiento + un agente
+          que la entiende. Soporte, ventas, onboarding, operaciones, producto, legal — todos tienen
+          conocimiento atrapado. Conectás la fuente que ya usan y listo. Esto abre la conversación: "¿cuál
+          de estos casos les duele más a ustedes?".
+        </aside>
+      </section>
+
+      <!-- 14 · CIERRE COMERCIAL + FUTURO -->
+      <section data-background-color="#0a0e17">
+        <span class="kicker">Craftech · lo que viene</span>
+        <h2>Hoy <strong>responde</strong>. Mañana, <strong>actúa</strong>.</h2>
+        <div class="two-col fragment" style="font-size:0.95em; margin-top:0.4em;">
+          <div><ul class="pill-list">
+            <li>💬 <b>Proactivo</b>: te escribe al detectar un problema — <em>"falló el deploy, ¿lo miramos?"</em></li>
+            <li>📅 <b>Eventos desde la charla</b>: detecta "reunión el martes" y la <em>agenda solo</em></li>
+            <li>✅ <b>Tareas y tickets</b>: crea y asigna en Jira a partir de lo que se habló</li>
+          </ul></div>
+          <div><ul class="pill-list">
+            <li>📊 <b>Resúmenes</b>: el daily del equipo, sin que nadie lo pida</li>
+            <li>🔔 <b>Alertas</b>: avisa cuando se decide o cambia algo clave</li>
+            <li>🔌 <b>Cualquier fuente y acción</b>: Teams, Drive, CRM — no solo responde, <em>hace</em></li>
+          </ul></div>
+        </div>
+        <p class="big fragment" style="margin-top:0.5em;">
+          Imaginalo con la <strong>data real de tu equipo</strong>.
+        </p>
+        <aside class="notes">
+          Hoy el agente es reactivo (le preguntás), pero el mismo patrón se vuelve PROACTIVO: detecta un
+          problema y te escribe, agenda una reunión, crea tickets, actúa sobre otras herramientas. Sirve
+          para abrir la cabeza antes del cierre comercial.
+        </aside>
+      </section>
+
+      <!-- · CTA CRAFTECH -->
+      <section class="hero center" data-background-color="#0a0e17">
+        <span class="kicker">Craftech · tu partner en AWS GenAI</span>
+        <h2>Lo construimos <strong>con tu equipo</strong></h2>
+        <div class="two-col" style="margin-top:0.5em; font-size:0.92em;">
+          <div><ul class="pill-list">
+            <li>☁️ <b>Arquitectura serverless</b> en AWS, lista para producción</li>
+            <li>🔒 <b>Seguridad y gobernanza</b> desde el día uno</li>
+          </ul></div>
+          <div><ul class="pill-list">
+            <li>💸 <b>FinOps</b>: pagás por uso, sin sorpresas</li>
+            <li>🤝 <b>Equipo dedicado</b> que queda como extensión del tuyo</li>
+          </ul></div>
+        </div>
+        <p style="margin-top:0.6em; font-size:1.05em;">
+          De la idea a producción, <strong>sin montar un equipo de infra</strong>.
+        </p>
+        <div class="badge" style="font-size:0.9em; margin-top:0.6em;">📩 Hablemos · craftech.io</div>
+        <aside class="notes">
+          El cierre comercial. Craftech construye esto con el cliente: arquitectura serverless en AWS,
+          seguridad y gobernanza, FinOps, y un equipo que funciona como extensión del suyo. CTA claro:
+          agendemos una charla, identifiquemos el caso de mayor impacto y armamos un piloto. Dejar el
+          contacto en pantalla y abrir Q&A.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/reveal.js"></script>
+  <script src="vendor/highlight.js"></script>
+  <script src="vendor/notes.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: "c/t",
+      transition: "slide",
+      backgroundTransition: "fade",
+      plugins: [RevealHighlight, RevealNotes],
+    });
+  </script>
+  <script src="js/vectorspace.js"></script>
+  <script src="js/vectordb.js"></script>
+  <script src="js/kbpipeline.js"></script>
+  <script src="js/agent3d.js"></script>
+  <script src="js/dataquality.js"></script>
+  <script src="js/agentloop.js"></script>
+</body>
+</html>
