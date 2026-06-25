@@ -23,7 +23,7 @@ import boto3
 from constants import KB_NAME, REGION
 from slack_sdk import WebClient
 
-DAYS = 7  # cuánto hacia atrás leemos de Slack
+DAYS = 180  # cuánto hacia atrás leemos de Slack
 TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 PREGUNTA = sys.argv[1] if len(sys.argv) > 1 else "¿qué se decidió hoy?"
 

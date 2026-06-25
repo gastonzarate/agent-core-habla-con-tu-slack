@@ -1,4 +1,5 @@
 # agent/agent.py
+import datetime
 import os
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from strands import Agent, tool
@@ -86,15 +87,25 @@ def ingest_slack(channel: str) -> str:
     return f"Indexé {n} mensajes del canal {channel}."
 
 
-_agent = Agent(
-    model=_model,
-    tools=[ask_kb, ingest_slack],
-    system_prompt=(
-        "Sos un asistente que responde sobre la historia de Slack del equipo. "
-        "Usá ask_kb para responder preguntas y SIEMPRE incluí las fuentes (los IDs de cita) al final. "
-        "Usá ingest_slack solo si te piden indexar un canal. Respondé en español, breve y preciso."
-    ),
+# Argentina (UTC-3) para que "hoy/ayer" tenga sentido local
+AR_TZ = datetime.timezone(datetime.timedelta(hours=-3))
+_DIAS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+
+BASE_SYSTEM = (
+    "Sos un asistente que responde sobre la historia de Slack del equipo. "
+    "Usá ask_kb para responder preguntas y SIEMPRE incluí las fuentes (los IDs de cita) al final. "
+    "Cada mensaje recuperado viene con su fecha entre corchetes [AAAA-MM-DD HH:MM]: "
+    "usala para resolver preguntas temporales como 'hoy', 'ayer' o 'esta semana'. "
+    "Usá ingest_slack solo si te piden indexar un canal. Respondé en español, breve y preciso."
 )
+
+
+def _today_context():
+    now = datetime.datetime.now(AR_TZ)
+    return f"\nFecha y hora actuales: {_DIAS[now.weekday()]} {now.strftime('%Y-%m-%d %H:%M')} (Argentina)."
+
+
+_agent = Agent(model=_model, tools=[ask_kb, ingest_slack], system_prompt=BASE_SYSTEM)
 
 
 def _extract_text(message):
@@ -115,6 +126,7 @@ def invoke(payload, context=None):
     if _mem and session_id:                       # 1) cargar historial (memoria)
         _agent.messages = _load_history(session_id)
 
+    _agent.system_prompt = BASE_SYSTEM + _today_context()  # contexto temporal fresco
     answer = _extract_text(_agent(prompt).message)  # 2) responder (con guardrail)
 
     if _mem and session_id:                       # 3) guardar el turno

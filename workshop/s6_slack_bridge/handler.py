@@ -1,5 +1,6 @@
 # bridge/handler.py
 import base64
+import datetime
 import json
 import os
 import re
@@ -107,6 +108,47 @@ def _scheduled_ingest():
     return total
 
 
+AR_TZ = datetime.timezone(datetime.timedelta(hours=-3))
+# IDs de fuente que mete el agente: "<canal>-<ts>" (ej C02EVF9H1MG-1782312916.900389)
+_SRC_RE = re.compile(r"\b([A-Z0-9]{8,})-(\d{6,}\.\d{3,})\b")
+
+
+def to_slack_mrkdwn(text):
+    """Markdown estándar (lo que devuelve Claude) → mrkdwn de Slack."""
+    text = re.sub(r"\*\*(.+?)\*\*", r"*\1*", text)                  # **negrita** → *negrita*
+    text = re.sub(r"__(.+?)__", r"*\1*", text)                      # __negrita__ → *negrita*
+    text = re.sub(r"(?m)^\s*#{1,6}\s*(.+?)\s*$", r"*\1*", text)     # títulos ## → negrita
+    text = re.sub(r"(?m)^\s*[-*]\s+", "• ", text)                   # viñetas - / * → •
+    text = re.sub(r"(?m)^\s*-{3,}\s*$", "", text)                   # línea --- → nada
+    text = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r"<\2|\1>", text)  # [txt](url) → <url|txt>
+    return text.strip()
+
+
+def _permalink(channel, ts):
+    try:
+        r = _slack_get("chat.getPermalink", {"channel": channel, "message_ts": ts})
+        return r.get("permalink") if r.get("ok") else None
+    except Exception:
+        return None
+
+
+def _linkify_sources(text):
+    """Reemplaza los IDs de fuente por links de Slack etiquetados con la fecha del mensaje."""
+    def repl(m):
+        chan, ts = m.group(1), m.group(2)
+        try:
+            label = datetime.datetime.fromtimestamp(float(ts), AR_TZ).strftime("%d/%m %H:%M")
+        except (TypeError, ValueError):
+            label = "ver"
+        link = _permalink(chan, ts)
+        return f"<{link}|{label}>" if link else label
+    return _SRC_RE.sub(repl, text)
+
+
+def _for_slack(text):
+    return _linkify_sources(to_slack_mrkdwn(text))
+
+
 def _post_message(channel, text, thread_ts=None):
     payload = {"channel": channel, "text": text}
     if thread_ts:
@@ -124,6 +166,7 @@ def _process_async(action):
     kind = action["kind"]
     if kind == "ask":
         answer = _ask_agent(action.get("text") or "Resumí lo último del canal.", action.get("session", ""))
+        answer = _for_slack(answer)  # markdown→mrkdwn + fuentes clickeables con fecha
         if action.get("response_url"):
             req = urllib.request.Request(
                 action["response_url"],
